@@ -38,15 +38,16 @@ lquota
 
 
 ### Clone the repo
-```bash
-cd $HOME
-git clone https://github.com/MagMueller/PMLR.git
-cd $HOME/PMLR
-```
 Set git user and email:
 ```bash
 git config --global user.email "example@yourgithubemail.com"
 git config --global user.name "yourgithubusername"
+```
+
+```bash
+cd $HOME
+git clone https://github.com/MagMueller/PMLR.git
+cd $HOME/PMLR
 ```
 
 ### Env
