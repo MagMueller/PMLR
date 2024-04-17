@@ -1,11 +1,7 @@
 # PMLR
 ## Setup
 
-```diff 
-- The files in file `euler_playground_commands`are a collection of single commands and not runable scripts.
-```
-
-You dont nessesarily need to login to the cluster to run the scripts. You can run them locally on your machine. In your normal setup.
+You dont nessesarily need to login to the cluster to develop your models. You can run them locally on your machine. In your normal setup.
 Its just useful for training.
 
 ### Login to cluster
@@ -43,12 +39,18 @@ lquota
 ```bash
 cd $HOME
 git clone https://github.com/MagMueller/PMLR.git
-cd PMLR
+cd $HOME/PMLR
+```
+Set git user and email:
+```bash
+git config --global user.email "example@yourgithubemail.com"
+git config --global user.name "yourgithubusername"
 ```
 
 ### Env
 Install venv:
 ```bash
+cd $HOME/PMLR
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -122,7 +124,7 @@ echo $SLURM_JOB_NODELIST
 e.g. in my case it is `eu-lo-s4-065`.
 4. In vs-code type `ctrl+shift+p` and type `Remote-SSH: Connect to Host...` and paste the node name.
 
-EMarttin123!
+
 
 ## Troubleshooting
 ### Internet access in the interactive session
