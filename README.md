@@ -5,10 +5,12 @@ You dont nessesarily need to login to the cluster to develop your models. You ca
 Its just useful for training.
 
 ### Login to cluster
-Change `mmagnus` to your username. Enter the password.
+Be in ETH network or use VPN. Change `mmagnus` to your username. 
 ```bash
 ssh mmagnus@euler.ethz.ch
 ```
+Enter the password.
+If you have troubles with that step, check out: https://scicomp.ethz.ch/wiki/Login_Nodes 
 
 
 ### Variables
