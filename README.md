@@ -126,7 +126,17 @@ echo $SLURM_JOB_NODELIST
 e.g. in my case it is `eu-lo-s4-065`.
 4. In vs-code type `ctrl+shift+p` and type `Remote-SSH: Connect to Host...` and paste the node name.
 
-
+5. Now a new vscode window whould open. Copy your eth password, becuase you may need it a couple of times now.
+Open Folder, e.g. the PMLR folder. Then open the jupyter notebook, selcet your kernel and run the cells.
+Test in a cell if you can access the gpu with:
+```python
+import torch
+torch.cuda.is_available()
+```
+or 
+```python
+!nvidia-smi
+``` 
 
 ## Troubleshooting
 ### Internet access in the interactive session
