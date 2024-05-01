@@ -1,4 +1,6 @@
+
 # %% Imports
+import time
 import matplotlib.pyplot as plt
 from scipy import sparse
 import torch_geometric
@@ -31,6 +33,8 @@ DT = 1.
 ALPHA = 1.
 GAMMA = 1.
 DROPOUT = 0.1
+HEIGHT = 721
+WIDTH = 1440
 VARIABLES = ['u10',
              'v10',
              't2m',
@@ -70,15 +74,15 @@ else:
 class H5GeometricDataset(torch.utils.data.Dataset):
     # data size is [batch, n_var, x, y] x = 721, y = 1440 for ERA5 n_var = 21
     # we want a Graph with 721*1440 nodes and 21 features and each node is connected to its 8 neighbors
-    def __init__(self, path, sequence_length=3):
+    def __init__(self, path, sequence_length=3, height=721, width=1440, features=21):
         self.file_path = path
         self.dataset = None
         with h5py.File(self.file_path, 'r') as file:
             # print keys
             self.dataset_len = len(file["fields"])
-        self.height = 721
-        self.width = 1440
-        self.features = 21
+        self.height = height
+        self.width = width
+        self.features = features
         # approx 800 Mio values -> 3.2 GB
         self.sequence_length = sequence_length
         self.edge_index = self.create_edge_index(self.height, self.width)
@@ -109,7 +113,8 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         return edge_index
 
 
-dataset = H5GeometricDataset(DATA_FILE, sequence_length=SEQUENCE_LENGTH)
+dataset = H5GeometricDataset(
+    DATA_FILE, sequence_length=SEQUENCE_LENGTH, height=HEIGHT, width=WIDTH, features=N_VAR)
 train_loader = torch.utils.data.DataLoader(
     dataset, batch_size=BATCH_SIZE, shuffle=True)
 # %% # get sample
@@ -166,14 +171,16 @@ optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 # %% - Train model
 def train(model, loader, optimizer, criterion, device):
+    start_time = time.time()
     model.train()
     total_loss = 0
     for batch, data in enumerate(loader):
+        batch_start_time = time.time()
         x, edge_index = data
         # Shape: [batch_size, sequence_length, num_nodes, num_features]
         x = x.to(device)
         edge_index = edge_index.to(device).squeeze()
-        print(f"X shape: {x.shape}, edge_index shape: {edge_index.shape}")
+        # print(f"X shape: {x.shape}, edge_index shape: {edge_index.shape}")
         # Reshape to fit the model's expected input and prepare for rolling prediction
         batch_size, seq_len, num_nodes, num_features = x.shape
         losses = []
@@ -198,7 +205,9 @@ def train(model, loader, optimizer, criterion, device):
         sequence_loss.backward()
         optimizer.step()
         total_loss += sequence_loss.item()
-        print(f"Total loss: {total_loss} at batch {batch}")
+        print(
+            f"Sample {batch} - Loss: {sequence_loss.item()} - Time taken: {time.time() - batch_start_time} seconds")
+    print(f"Total time: {(time.time() - start_time) / 60} minutes")
 
     return total_loss / len(loader)
 
@@ -210,3 +219,54 @@ total_loss = train(model, train_loader, optimizer, criteria, DEVICE)
 # %%
 
 # eval
+def evaluate(model, loader, device):
+    model.eval()  # Set the model to evaluation mode
+    total_rmse = 0
+    total_acc = 0
+    total_batches = len(loader)
+
+    with torch.no_grad():  # Disable gradient computation
+        for batch, data in enumerate(loader):
+            x, edge_index = data
+            # Shape: [batch_size, sequence_length, num_nodes, num_features]
+            x = x.to(device)
+            edge_index = edge_index.to(device).squeeze()
+
+            batch_size, seq_len, num_nodes, num_features = x.shape
+            # Iterate over each timestep, predicting the next state except for the last since no next state exists
+            for t in range(seq_len - 1):
+                x_input = x[:, t, :, :].view(
+                    batch_size, num_nodes, num_features)
+                x_target = x[:, t + 1, :,
+                             :].view(batch_size, num_nodes, num_features)
+
+                # Model output for current timestep
+                predictions = model(x_input, edge_index)
+                # reshape to [1, 21, height, width]
+                x_target = x_target.view(1, N_VAR, HEIGHT, WIDTH)
+                predictions = predictions.view(1, N_VAR, HEIGHT, WIDTH)
+                predictions = predictions
+                # Calculate the latitude-weighted RMSE and accuracy for the predictions
+                rmse = weighted_rmse_channels(predictions, x_target)
+                acc = weighted_acc_channels(predictions, x_target)
+
+                # sum
+                rmse = torch.mean(rmse)
+                acc = torch.mean(acc)
+                total_rmse += rmse.item()
+                total_acc += acc.item()
+                print(f"RMSE: {rmse.item()}, Accuracy: {acc.item()}")
+
+            print(
+                f"Batch {batch}/{total_batches} - RMSE: {rmse.item()}, Accuracy: {acc.item()}")
+
+    avg_rmse = total_rmse / total_batches / (seq_len - 1)
+    avg_acc = total_acc / total_batches / (seq_len - 1)
+    print(f"Average RMSE: {avg_rmse}, Average Accuracy: {avg_acc}")
+    return avg_rmse, avg_acc
+
+
+# eval
+rmse, acc = evaluate(model, train_loader, DEVICE)
+
+# %%
