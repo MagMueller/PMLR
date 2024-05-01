@@ -1,7 +1,7 @@
 # PMLR
-## Setup
+## Cluster Setup
 
-You dont nessesarily need to login to the cluster to develop your models. You can run them locally on your machine. In your normal setup.
+You dont nessesarily need to login to the cluster to develop your models. You can run them locally on your machine. In your normal setup, then skip this part.
 Its just useful for training.
 
 ### Login to cluster
@@ -36,6 +36,8 @@ lquota
 
 `$HOME`: Here you have less space, but the files will not be deleted.
 
+## Code setup
+
 
 ### Clone the repo
 Set git user and email:
@@ -50,6 +52,14 @@ git clone https://github.com/MagMueller/PMLR.git
 cd $HOME/PMLR
 ```
 
+### Data
+For the beginning we can use the 3.5 GB sample data with 40 samples. 
+```bash
+wget https://portal.nersc.gov/project/m4134/ccai_demo.tar
+tar -xvf ccai_demo.tar
+rm ccai_demo.tar
+```
+
 ### Env
 Install venv:
 ```bash
@@ -58,6 +68,7 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+Be careful with torch and geometric versions, depening on your hardware you may need to install a different version.
 When you need more packages, install them with pip and then do:
 ```bash
 pip freeze > requirements.txt
