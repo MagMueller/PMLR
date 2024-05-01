@@ -208,3 +208,5 @@ total_loss = train(model, train_loader, optimizer, criteria, DEVICE)
 
 
 # %%
+
+# eval
