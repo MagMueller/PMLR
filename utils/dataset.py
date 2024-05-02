@@ -31,14 +31,14 @@ class H5GeometricDataset(torch.utils.data.Dataset):
             os.system("tar -xvf ccai_demo.tar")
             os.system("rm ccai_demo.tar")
             print("Downloaded and extracted file successfully")
+            # approx 800 Mio values -> 3.2 GB
+
         with h5py.File(self.file_path, 'r') as file:
-            # print keys
             self.dataset_len = len(file["fields"])
 
         self.height = height
         self.width = width
         self.features = features
-        # approx 800 Mio values -> 3.2 GB
         self.sequence_length = sequence_length
         self.edge_index = self.create_edge_index(self.height, self.width)
         # TODO to sparse
@@ -46,7 +46,6 @@ class H5GeometricDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        # load a sequence of 5 time steps
         sequences = [self.dataset[i].reshape(-1, self.features)
                      for i in range(index, index + self.sequence_length + 1)]
         # numpy array
@@ -63,6 +62,6 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         (row, col), pos = grid(height=height, width=width)
         edge_index = torch.stack([row, col], dim=0).to(torch.long).to(DEVICE)
         edge_index = to_undirected(edge_index)
-        # edge_index = edge_index.to_sparse()
+        # edge_index = edge_index.to_sparse() # not implemented on mps for mac
         # edge_index = edge_index.coalesce()
         return edge_index
