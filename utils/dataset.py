@@ -23,8 +23,7 @@ class H5GeometricDataset(torch.utils.data.Dataset):
             # tar -xvf ccai_demo.tar
             # rm ccai_demo.tar
             # ```
-            print(
-                f"File {self.file_path} does not exist we will download it now")
+            print(f"File {self.file_path} does not exist we will download it now")
             import urllib.request
             url = "https://portal.nersc.gov/project/m4134/ccai_demo.tar"
             urllib.request.urlretrieve(url, "ccai_demo.tar")

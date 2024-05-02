@@ -26,8 +26,7 @@ def train_one_epoch(model: nn.Module, loader: torch.utils.data.DataLoader, optim
         # Iterate over each timestep, predicting the next state
         for t in range(seq_len - 1):
             x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
-            x_target = x[:, t + 1, :,
-                         :].view(batch_size, num_nodes, num_features)
+            x_target = x[:, t + 1, :, :].view(batch_size, num_nodes, num_features)
 
             # Model output for current timestep
             predictions = model(x_input, edge_index)
@@ -41,8 +40,7 @@ def train_one_epoch(model: nn.Module, loader: torch.utils.data.DataLoader, optim
         sequence_loss.backward()
         optimizer.step()
         total_loss += sequence_loss.item()
-        print(
-            f"Sample {batch + 1}/{total_batches}  - Loss: {sequence_loss.item()} - Time taken: {(time.time() - batch_start_time):.2f} seconds - Sequence length {seq_len}")
+        print(f"Sample {batch + 1}/{total_batches}  - Loss: {sequence_loss.item()} - Time taken: {(time.time() - batch_start_time):.2f} seconds - Sequence length {seq_len}")
     print(f"Total time: {(time.time() - start_time)/60:.2f} minutes")
 
     return total_loss / len(loader)

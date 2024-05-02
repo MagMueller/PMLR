@@ -16,8 +16,7 @@ def weighted_rmse_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Te
     num_lat = pred.shape[2]
     lat_t = torch.arange(start=0, end=num_lat, device=pred.device)
     s = torch.sum(torch.cos(3.1416/180. * lat(lat_t, num_lat)))
-    weight = torch.reshape(latitude_weighting_factor(
-        lat_t, num_lat, s), (1, 1, -1, 1))
+    weight = torch.reshape(latitude_weighting_factor(lat_t, num_lat, s), (1, 1, -1, 1))
     result = torch.sqrt(torch.mean(weight * (pred - target)**2., dim=(-1, -2)))
     return result
 
@@ -27,8 +26,7 @@ def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Ten
     num_lat = pred.shape[2]
     lat_t = torch.arange(start=0, end=num_lat, device=pred.device)
     s = torch.sum(torch.cos(3.1416/180. * lat(lat_t, num_lat)))
-    weight = torch.reshape(latitude_weighting_factor(
-        lat_t, num_lat, s), (1, 1, -1, 1))
+    weight = torch.reshape(latitude_weighting_factor(lat_t, num_lat, s), (1, 1, -1, 1))
     result = torch.sum(weight * pred * target, dim=(-1, -2)) / torch.sqrt(torch.sum(weight * pred * pred, dim=(-1, -2)) * torch.sum(weight * target *
                                                                                                                                     target, dim=(-1, -2)))
     return result
@@ -52,10 +50,8 @@ def evaluate(model, loader, device, subset=None):
             batch_size, seq_len, num_nodes, num_features = x.shape
             # Iterate over each timestep, predicting the next state except for the last since no next state exists
             for t in range(seq_len - 1):
-                x_input = x[:, t, :, :].view(
-                    batch_size, num_nodes, num_features)
-                x_target = x[:, t + 1, :,
-                             :].view(batch_size, num_nodes, num_features)
+                x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
+                x_target = x[:, t + 1, :, :].view(batch_size, num_nodes, num_features)
 
                 # Model output for current timestep
                 predictions = model(x_input, edge_index)
@@ -74,10 +70,9 @@ def evaluate(model, loader, device, subset=None):
                 total_acc += acc.item()
                 # print(f"RMSE: {rmse.item()}, Accuracy: {acc.item()}")
 
-            print(
-                f"Batch {batch + 1}/{total_batches} - RMSE: {rmse.item():0.3f}, Accuracy: {acc.item():0.3f}")
+            print(f"Batch {batch + 1}/{total_batches} - RMSE: {rmse.item():0.3f}, Accuracy: {acc.item():0.3f}")
 
     avg_rmse = total_rmse / total_batches / (seq_len - 1)
     avg_acc = total_acc / total_batches / (seq_len - 1)
-    print(f"Average RMSE: {avg_rmse}, Average Accuracy: {avg_acc}")
+    print(f"Average RMSE: {avg_rmse:.3f}, Average Accuracy: {avg_acc:.3f}")
     return avg_rmse, avg_acc
