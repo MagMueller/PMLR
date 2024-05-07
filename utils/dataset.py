@@ -45,8 +45,8 @@ class H5GeometricDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        sequences = [self.dataset[i].reshape(-1, self.features)
-                     for i in range(index, index + self.sequence_length + 1)]
+        sequences = [self.dataset[i].transpose(1,2,0).reshape(-1, self.features)
+                     for i in range(index, index + self.sequence_length + 1)] 
         # numpy array
         sequences = np.stack(sequences, axis=0)
         # to torch tensor

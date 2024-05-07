@@ -10,7 +10,18 @@ if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
 DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
-DATA_FILE = os.path.join(DATA_PATH, "2018.h5")
+
+YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
+# for local testing
+# YEARS = [2018, 2018]
+
+VAL_FILE = os.path.join(DATA_PATH, "2018.h5")
+
+GLOBAL_MEANS_PATH = "./ccai_demo/additional/stats_v0/global_means.npy"
+GLOBAL_STDS_PATH = "./ccai_demo/additional/stats_v0/global_stds.npy"
+
+TIME_MEANS_PATH = "./ccai_demo/additional/stats_v0/time_means.npy"
+LAND_SEA_MASK_PATH = "./ccai_demo/additional/stats_v0/land_sea_mask.npy"
 
 # Training Configuration
 BATCH_SIZE = 1
