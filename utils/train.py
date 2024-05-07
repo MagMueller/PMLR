@@ -40,7 +40,8 @@ def train_one_epoch(model: nn.Module, loader: torch.utils.data.DataLoader, optim
         sequence_loss.backward()
         optimizer.step()
         total_loss += sequence_loss.item()
-        print(f"Sample {batch + 1}/{total_batches}  - Loss: {sequence_loss.item()} - Time taken: {(time.time() - batch_start_time):.2f} seconds - Sequence length {seq_len}")
+        if batch % 100 == 0:
+            print(f"Sample {batch + 1}/{total_batches}  - Loss: {sequence_loss.item()} - Time taken: {(time.time() - batch_start_time):.2f} seconds")
     print(f"Total time: {(time.time() - start_time)/60:.2f} minutes")
 
     return total_loss / len(loader)

@@ -61,6 +61,10 @@ criteria = nn.MSELoss()
 best_acc = 0
 
 
+# inital evaluation
+rmse, acc = evaluate(model, validation_loader, DEVICE, subset=3)
+wandb.log({"val_rmse": rmse, "val_acc": acc, "epoch": 0})
+print(f"Initial RMSE: {rmse} Initial Accuracy: {acc}")
 # train model for every year with seperate dataloader 
 for epoch in range(EPOCHS):
     print(f"\n\n\nEpoch {epoch + 1}/{EPOCHS}")
@@ -76,6 +80,7 @@ for epoch in range(EPOCHS):
         # eval
         # Currently no test set: DONE
         print(f"\nEvaluating for year {YEARS[i]}...")
+        print(f"val loader: {validation_loader}")
         rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL)
         wandb.log({"train_loss": train_loss, "val_rmse": rmse, "val_acc": acc, "epoch": epoch + 1})
             

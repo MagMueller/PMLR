@@ -32,7 +32,7 @@ def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Ten
     return result
 
 
-def evaluate(model, loader, device, subset=None):
+def evaluate(model, loader, device, subset=None, autorereg=False):
     model.eval()  # Set the model to evaluation mode
     total_rmse = 0
     total_acc = 0
@@ -47,10 +47,21 @@ def evaluate(model, loader, device, subset=None):
             x = x.to(device)
             edge_index = edge_index.to(device).squeeze()
 
+
             batch_size, seq_len, num_nodes, num_features = x.shape
+            predictions = None
+            acc_per_pred_step = []
+            rmse_per_pred_step = []
             # Iterate over each timestep, predicting the next state except for the last since no next state exists
             for t in range(seq_len - 1):
-                x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
+                if autorereg:
+                    if predictions is None:
+                        x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
+                    else:
+                        x_input = predictions.view(1, num_nodes, num_features)
+                else:
+                    x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
+
                 x_target = x[:, t + 1, :, :].view(batch_size, num_nodes, num_features)
 
                 # Model output for current timestep
@@ -68,9 +79,15 @@ def evaluate(model, loader, device, subset=None):
                 acc = torch.mean(acc)
                 total_rmse += rmse.item()
                 total_acc += acc.item()
-                # print(f"RMSE: {rmse.item()}, Accuracy: {acc.item()}")
+                # acc_per_pred_step.append(acc.item())
+                # rmse_per_pred_step.append(rmse.item())
 
-            print(f"Batch {batch + 1}/{total_batches} - RMSE: {rmse.item():0.3f}, Accuracy: {acc.item():0.3f}")
+
+                # print(f"RMSE: {rmse.item()}, Accuracy: {acc.item()}")
+            if batch % 100 == 0:
+                print(f"Batch {batch + 1}/{total_batches} - RMSE: {rmse.item():0.3f}, Accuracy: {acc.item():0.3f}")
+
+
 
     avg_rmse = total_rmse / total_batches / (seq_len - 1)
     avg_acc = total_acc / total_batches / (seq_len - 1)
