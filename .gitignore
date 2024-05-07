@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+
+
 # Distribution / packaging
 .Python
 build/
@@ -159,3 +161,5 @@ reproduceFourCastNet/ccai_demo/
 wandb/
 ccai_demo
 output/
+pmlr_env/
+ccai_demo.tar
