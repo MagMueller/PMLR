@@ -15,10 +15,10 @@ DATA_FILE = os.path.join(DATA_PATH, "2018.h5")
 # Training Configuration
 BATCH_SIZE = 1
 EPOCHS = 2
-SUBSET_TRAIN = 3  # None to use all
-SUBSET_VAL = 3  # None to use all
+SUBSET_TRAIN = 1  # None to use all
+SUBSET_VAL = 1  # None to use all
 LEARNING_RATE = 0.001
-SEQUENCE_LENGTH = 3
+SEQUENCE_LENGTH = 1
 
 # Model Architecture
 N_LAYER = 3

@@ -155,3 +155,7 @@ cython_debug/
 
 # own
 reproduceFourCastNet/ccai_demo/
+
+wandb/
+ccai_demo
+output/

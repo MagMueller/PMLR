@@ -12,7 +12,10 @@ from utils.eval import evaluate
 from utils.train import train_one_epoch
 # %% - Define constants
 from utils.config import *
+import wandb
 
+
+wandb.init(project="PMLR")
 
 # %% - Load data
 
@@ -53,13 +56,15 @@ for epoch in range(EPOCHS):
     # Currently no test set
     print(f"\nEvaluating ...")
     rmse, acc = evaluate(model, train_loader, DEVICE, subset=SUBSET_VAL)
+    wandb.log({"train_loss": train_loss, "val_rmse": rmse, "val_acc": acc, "epoch": epoch + 1})
     # print(f"RMSE: {rmse}, ACC: {acc}")
     if acc > best_acc:
         best_acc = acc
         torch.save(model.state_dict(), os.path.join(OUTPUT_PATH, "best_model.pt"))
-    # save model
-
-# %%
+        # artifact
+        artifact = wandb.Artifact('best_model', type='model')
+        artifact.add_file(os.path.join(OUTPUT_PATH, "best_model.pt"))
+        wandb.log_artifact(artifact)
 
 
 # %%
