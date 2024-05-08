@@ -1,7 +1,8 @@
 
 import torch
-from utils.config import HEIGHT, WIDTH, N_VAR
+from utils.config import HEIGHT, WIDTH, N_VAR, TIME_MEANS_PATH, GLOBAL_MEANS_PATH, GLOBAL_STDS_PATH
 import wandb
+import numpy as np
 
 
 def lat(j: torch.Tensor, num_lat: int) -> torch.Tensor:
@@ -38,6 +39,19 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
     total_rmse = 0.0
     total_acc = 0.0
     total_batches = len(loader) if subset is None else subset
+
+    # for normalizing
+    time_means = np.load(TIME_MEANS_PATH)[0, :N_VAR]
+    means = np.load(GLOBAL_MEANS_PATH)[0, :N_VAR] 
+    stds = np.load(GLOBAL_STDS_PATH)[0, :N_VAR]
+        
+    m = torch.as_tensor((time_means - means)/stds)[:, 0:HEIGHT]
+    m = torch.unsqueeze(m, 0)
+    # these are needed to compute ACC and RMSE metrics
+    m = m.to(device, dtype=torch.float)
+    std = torch.as_tensor(stds[:,0,0]).to(device, dtype=torch.float)
+
+
     with torch.no_grad():  # Disable gradient computation
         for batch_index, data in enumerate(loader):
             if subset is not None and batch_index >= subset:
@@ -67,8 +81,8 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
                 x_target = x_target.view(1, N_VAR, HEIGHT, WIDTH)
                 predictions = predictions.view(1, N_VAR, HEIGHT, WIDTH)
                 # Compute the RMSE and accuracy for each prediction step
-                rmse = weighted_rmse_channels(predictions, x_target)
-                acc = weighted_acc_channels(predictions, x_target)
+                rmse = weighted_rmse_channels(predictions, x_target) * std
+                acc = weighted_acc_channels(predictions-m, x_target-m)
 
                 acc_per_pred_step[t] += acc.mean().item()
                 rmse_per_pred_step[t] += rmse.mean().item()
