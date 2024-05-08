@@ -48,7 +48,7 @@ VARIABLES = [
     'u850', 'v850', 'z850', 'u500', 'v500', 'z500', 't500', 'z50', 'r500',
     'r850', 'tcwv'
 ]
-N_VAR = 21
+N_VAR = 20
 print(f"Number of variables: {N_VAR}")
 
 # Device Configuration
