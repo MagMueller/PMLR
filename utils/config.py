@@ -9,7 +9,7 @@ if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
 DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
-DATA_PATH = "/cluster/scratch/mmagnus/data"
+# DATA_PATH = "/cluster/scratch/mmagnus/data"
 
 YEARS = [2018]
 # for local testing
@@ -48,7 +48,7 @@ VARIABLES = [
     'u850', 'v850', 'z850', 'u500', 'v500', 'z500', 't500', 'z50', 'r500',
     'r850', 'tcwv'
 ]
-N_VAR = 21
+N_VAR = 20
 print(f"Number of variables: {N_VAR}")
 
 # Device Configuration
