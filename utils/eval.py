@@ -124,4 +124,4 @@ def log_values_over_time(values, name="Accuracy", time_step=6, single_plot=True)
         for i, acc in enumerate(values):
             # one step is 6 h
             days = (i + 1) * time_step / 24
-            wandb.log({f"Forecast {name} after days": acc + (n+1)*0.1}, step=i)
+            wandb.log({f"Forecast {name} after days": acc}, step=i)
