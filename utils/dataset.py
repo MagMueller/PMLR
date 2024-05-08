@@ -6,6 +6,7 @@ import torch
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils import grid
 from utils.config import DEVICE
+from utils.config import *
 
 
 class H5GeometricDataset(torch.utils.data.Dataset):
@@ -40,6 +41,12 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         self.features = features
         self.sequence_length = sequence_length
         self.edge_index = self.create_edge_index(self.height, self.width)
+
+        self.means = np.load(GLOBAL_MEANS_PATH)[0, :features] 
+        self.stds = np.load(GLOBAL_STDS_PATH)[0, :features]
+        self.means = self.means.reshape(1, 1, features)
+        self.stds = self.stds.reshape(1, 1, features)
+
         # TODO to sparse
 
     def __getitem__(self, index):
@@ -47,8 +54,16 @@ class H5GeometricDataset(torch.utils.data.Dataset):
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
         sequences = [self.dataset[i].transpose(1, 2, 0).reshape(-1, self.features)
                      for i in range(index, index + self.sequence_length + 1)]
+        
         # numpy array
         sequences = np.stack(sequences, axis=0)
+        print(f'shape sequence: {sequences.shape}')
+
+        # normalizing
+        normalized_sequences = (sequences - self.means) / self.stds
+        print(f'shape means: {self.means.shape}')
+        print(f'shape normalized_sequences: {normalized_sequences.shape}')
+
         # to torch tensor
         x = torch.tensor(sequences, dtype=torch.float32).to(DEVICE)
         return x, self.edge_index
