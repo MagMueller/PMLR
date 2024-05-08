@@ -9,7 +9,7 @@ if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
 DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
-# DATA_PATH = "/cluster/scratch/mmagnus/data"
+DATA_PATH = "/cluster/scratch/mmagnus/data"
 
 YEARS = [2018]
 # for local testing
