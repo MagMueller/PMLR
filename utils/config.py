@@ -8,14 +8,15 @@ OUTPUT_PATH = os.path.join("output", now)
 if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
-DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
 DATA_PATH = "/cluster/scratch/mmagnus/data"
+DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
 
 YEARS = [2018]
 # for local testing
 # YEARS = [2018, 2018]
 
 VAL_FILE = os.path.join(DATA_PATH, "2018_small.h5")
+VAL_FILE = os.path.join(DATA_PATH, "2018.h5")
 
 GLOBAL_MEANS_PATH = "./ccai_demo/additional/stats_v0/global_means.npy"
 GLOBAL_STDS_PATH = "./ccai_demo/additional/stats_v0/global_stds.npy"
