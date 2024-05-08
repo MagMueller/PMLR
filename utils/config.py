@@ -27,9 +27,10 @@ LAND_SEA_MASK_PATH = "./ccai_demo/additional/stats_v0/land_sea_mask.npy"
 BATCH_SIZE = 1
 EPOCHS = 10
 SUBSET_TRAIN = None  # None to use all
-SUBSET_VAL = 40  # None to use all
+SUBSET_VAL = 3  # None to use all
 LEARNING_RATE = 0.001
 SEQUENCE_LENGTH = 1
+SEQUENCE_LENGTH_VAL = 10 # this is our prediction horizon
 
 # Model Architecture
 N_LAYER = 3

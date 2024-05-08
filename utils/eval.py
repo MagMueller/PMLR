@@ -1,6 +1,7 @@
 
 import torch
 from utils.config import HEIGHT, WIDTH, N_VAR
+import wandb
 
 
 def lat(j: torch.Tensor, num_lat: int) -> torch.Tensor:
@@ -32,64 +33,75 @@ def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Ten
     return result
 
 
-def evaluate(model, loader, device, subset=None, autorereg=False):
+
+def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
     model.eval()  # Set the model to evaluation mode
-    total_rmse = 0
-    total_acc = 0
+    total_rmse = 0.0
+    total_acc = 0.0
     total_batches = len(loader) if subset is None else subset
 
     with torch.no_grad():  # Disable gradient computation
-        for batch, data in enumerate(loader):
-            if subset is not None and batch >= subset:
+        for batch_index, data in enumerate(loader):
+            if subset is not None and batch_index >= subset:
                 break
+            
+
             x, edge_index = data
-            # Shape: [batch_size, sequence_length, num_nodes, num_features]
             x = x.to(device)
             edge_index = edge_index.to(device).squeeze()
 
-
             batch_size, seq_len, num_nodes, num_features = x.shape
-            predictions = None
-            acc_per_pred_step = []
-            rmse_per_pred_step = []
-            # Iterate over each timestep, predicting the next state except for the last since no next state exists
+
+            # Initialize containers for metrics
+            acc_per_pred_step = torch.zeros(seq_len).to(device)
+            rmse_per_pred_step = torch.zeros(seq_len).to(device)
+
+            # Iterate over prediction steps
             for t in range(seq_len - 1):
-                if autorereg:
-                    if predictions is None:
-                        x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
-                    else:
-                        x_input = predictions.view(1, num_nodes, num_features)
+                if autoreg and t > 0:
+                    x_input = predictions
                 else:
                     x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
 
                 x_target = x[:, t + 1, :, :].view(batch_size, num_nodes, num_features)
 
-                # Model output for current timestep
                 predictions = model(x_input, edge_index)
-                # reshape to [1, 21, height, width]
-                x_target = x_target.view(1, N_VAR, HEIGHT, WIDTH)
-                predictions = predictions.view(1, N_VAR, HEIGHT, WIDTH)
-                predictions = predictions
-                # Calculate the latitude-weighted RMSE and accuracy for the predictions
+                predictions = predictions.view(batch_size, num_nodes, num_features)
+
+                # Compute the RMSE and accuracy for each prediction step
                 rmse = weighted_rmse_channels(predictions, x_target)
                 acc = weighted_acc_channels(predictions, x_target)
 
-                # sum
-                rmse = torch.mean(rmse)
-                acc = torch.mean(acc)
-                total_rmse += rmse.item()
-                total_acc += acc.item()
-                # acc_per_pred_step.append(acc.item())
-                # rmse_per_pred_step.append(rmse.item())
+                acc_per_pred_step[t] += acc.mean().item()
+                rmse_per_pred_step[t] += rmse.mean().item()
 
+            # Accumulate total metrics
+            total_rmse += rmse_per_pred_step.mean()().item()  # Sum over all prediction steps
+            total_acc += acc_per_pred_step.mean().item()
+            # Log after every 100 batches
+            if batch_index % 100 == 0:
+                print(f"Batch {batch_index + 1}/{total_batches} - RMSE: {rmse_per_pred_step.mean():0.3f}, Accuracy: {acc_per_pred_step.mean():0.3f}")
 
-                # print(f"RMSE: {rmse.item()}, Accuracy: {acc.item()}")
-            if batch % 100 == 0:
-                print(f"Batch {batch + 1}/{total_batches} - RMSE: {rmse.item():0.3f}, Accuracy: {acc.item():0.3f}")
+    if subset is not None:
+        total_batches = max(total_batches, subset)
 
-
-
-    avg_rmse = total_rmse / total_batches / (seq_len - 1)
-    avg_acc = total_acc / total_batches / (seq_len - 1)
+    avg_rmse = total_rmse / (total_batches )
+    avg_acc = total_acc / (total_batches )
     print(f"Average RMSE: {avg_rmse:.3f}, Average Accuracy: {avg_acc:.3f}")
+
+    acc_per_pred_step /= total_batches
+    rmse_per_pred_step /= total_batches
+    print(f"Average RMSE per prediction step: {rmse_per_pred_step}")
+    print(f"Average Accuracy per prediction step: {acc_per_pred_step}")
+
+    if log:
+        wandb.log({"val_rmse": avg_rmse, "val_acc": avg_acc})
+        # log avg rmse and acc per prediction step as a list
+        wandb.log({"val_rmse_per_pred_step": rmse_per_pred_step})
+        wandb.log({"val_acc_per_pred_step": acc_per_pred_step})
+
+
+
+
     return avg_rmse, avg_acc
+

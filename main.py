@@ -31,7 +31,7 @@ for year in YEARS:
     train_loaders.append(train_loader)
 
 ## create validation dataset
-val_dataset = H5GeometricDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH, height=HEIGHT, width=WIDTH, features=N_VAR)
+val_dataset = H5GeometricDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH_VAL, height=HEIGHT, width=WIDTH, features=N_VAR)
 validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 
@@ -62,10 +62,11 @@ best_acc = 0
 
 
 # inital evaluation
+print(f"\nEvaluating initial model...")
 rmse, acc = evaluate(model, validation_loader, DEVICE, subset=3)
-wandb.log({"val_rmse": rmse, "val_acc": acc, "epoch": 0})
-print(f"Initial RMSE: {rmse} Initial Accuracy: {acc}")
+
 # train model for every year with seperate dataloader 
+print(f"\n\n\nTraining model...")
 for epoch in range(EPOCHS):
     print(f"\n\n\nEpoch {epoch + 1}/{EPOCHS}")
 
@@ -82,7 +83,7 @@ for epoch in range(EPOCHS):
         print(f"\nEvaluating for year {YEARS[i]}...")
         print(f"val loader: {validation_loader}")
         rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL)
-        wandb.log({"train_loss": train_loss, "val_rmse": rmse, "val_acc": acc, "epoch": epoch + 1})
+        wandb.log({"epoch": epoch + 1})
             
    
         if acc > best_acc:
