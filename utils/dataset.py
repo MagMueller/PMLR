@@ -24,13 +24,13 @@ class H5GeometricDataset(torch.utils.data.Dataset):
             # rm ccai_demo.tar
             # ```
             print(f"File {self.file_path} does not exist we will download it now")
-            import urllib.request
-            url = "https://portal.nersc.gov/project/m4134/ccai_demo.tar"
-            urllib.request.urlretrieve(url, "ccai_demo.tar")
-            os.system("tar -xvf ccai_demo.tar")
-            os.system("rm ccai_demo.tar")
-            print("Downloaded and extracted file successfully")
-            # approx 800 Mio values -> 3.2 GB
+            # import urllib.request
+            # url = "https://portal.nersc.gov/project/m4134/ccai_demo.tar"
+            # urllib.request.urlretrieve(url, "ccai_demo.tar")
+            # os.system("tar -xvf ccai_demo.tar")
+            # os.system("rm ccai_demo.tar")
+            # print("Downloaded and extracted file successfully")
+            # # approx 800 Mio values -> 3.2 GB
 
         with h5py.File(self.file_path, 'r') as file:
             self.dataset_len = len(file["fields"])
@@ -45,8 +45,8 @@ class H5GeometricDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        sequences = [self.dataset[i].transpose(1,2,0).reshape(-1, self.features)
-                     for i in range(index, index + self.sequence_length + 1)] 
+        sequences = [self.dataset[i].transpose(1, 2, 0).reshape(-1, self.features)
+                     for i in range(index, index + self.sequence_length + 1)]
         # numpy array
         sequences = np.stack(sequences, axis=0)
         # to torch tensor

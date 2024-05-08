@@ -33,18 +33,15 @@ def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Ten
     return result
 
 
-
 def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
     model.eval()  # Set the model to evaluation mode
     total_rmse = 0.0
     total_acc = 0.0
     total_batches = len(loader) if subset is None else subset
-
     with torch.no_grad():  # Disable gradient computation
         for batch_index, data in enumerate(loader):
             if subset is not None and batch_index >= subset:
                 break
-            
 
             x, edge_index = data
             x = x.to(device)
@@ -53,21 +50,22 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
             batch_size, seq_len, num_nodes, num_features = x.shape
 
             # Initialize containers for metrics
-            acc_per_pred_step = torch.zeros(seq_len).to(device)
-            rmse_per_pred_step = torch.zeros(seq_len).to(device)
+            acc_per_pred_step = torch.zeros(seq_len - 1).to(device)
+            rmse_per_pred_step = torch.zeros(seq_len - 1).to(device)
 
             # Iterate over prediction steps
             for t in range(seq_len - 1):
                 if autoreg and t > 0:
-                    x_input = predictions
+                    x_input = predictions.view(batch_size, num_nodes, num_features)
                 else:
                     x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
 
                 x_target = x[:, t + 1, :, :].view(batch_size, num_nodes, num_features)
 
                 predictions = model(x_input, edge_index)
-                predictions = predictions.view(batch_size, num_nodes, num_features)
 
+                x_target = x_target.view(1, N_VAR, HEIGHT, WIDTH)
+                predictions = predictions.view(1, N_VAR, HEIGHT, WIDTH)
                 # Compute the RMSE and accuracy for each prediction step
                 rmse = weighted_rmse_channels(predictions, x_target)
                 acc = weighted_acc_channels(predictions, x_target)
@@ -76,7 +74,7 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
                 rmse_per_pred_step[t] += rmse.mean().item()
 
             # Accumulate total metrics
-            total_rmse += rmse_per_pred_step.mean()().item()  # Sum over all prediction steps
+            total_rmse += rmse_per_pred_step.mean().item()  # Sum over all prediction steps
             total_acc += acc_per_pred_step.mean().item()
             # Log after every 100 batches
             if batch_index % 100 == 0:
@@ -85,8 +83,8 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
     if subset is not None:
         total_batches = max(total_batches, subset)
 
-    avg_rmse = total_rmse / (total_batches )
-    avg_acc = total_acc / (total_batches )
+    avg_rmse = total_rmse / (total_batches)
+    avg_acc = total_acc / (total_batches)
     print(f"Average RMSE: {avg_rmse:.3f}, Average Accuracy: {avg_acc:.3f}")
 
     acc_per_pred_step /= total_batches
@@ -95,13 +93,35 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True):
     print(f"Average Accuracy per prediction step: {acc_per_pred_step}")
 
     if log:
+
         wandb.log({"val_rmse": avg_rmse, "val_acc": avg_acc})
-        # log avg rmse and acc per prediction step as a list
-        wandb.log({"val_rmse_per_pred_step": rmse_per_pred_step})
-        wandb.log({"val_acc_per_pred_step": acc_per_pred_step})
-
-
-
+        # log histogram of acc_per_pred_step
+        # log acc tensor to plot later
+        log_values_over_time(acc_per_pred_step, name="Accuracy")
+        log_values_over_time(rmse_per_pred_step, name="RMSE")
 
     return avg_rmse, avg_acc
 
+
+def log_values_over_time(values, name="Accuracy", time_step=6, single_plot=True):
+    """
+    Log values for multiple future time steps.
+
+    Args:
+    values (list or tensor): A list or tensor containing values for future time steps.
+
+    """
+    # Create a dictionary to log
+    if single_plot:
+        log_data = {}
+        for i, acc in enumerate(values):
+            # one step is 6 h
+            days = (i + 1) * time_step / 24
+            log_data[f"Forecast {name} after {days} days"] = acc
+        # x axis in days
+        wandb.log(log_data)
+    else:
+        for i, acc in enumerate(values):
+            # one step is 6 h
+            days = (i + 1) * time_step / 24
+            wandb.log({f"Forecast {name} after days": acc + (n+1)*0.1}, step=i)

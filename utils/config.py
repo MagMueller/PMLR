@@ -11,11 +11,11 @@ if not os.path.exists(OUTPUT_PATH):
 DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
 DATA_PATH = "/cluster/scratch/mmagnus/data"
 
-YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
+YEARS = [2018]
 # for local testing
 # YEARS = [2018, 2018]
 
-VAL_FILE = os.path.join(DATA_PATH, "2017.h5")
+VAL_FILE = os.path.join(DATA_PATH, "2018_small.h5")
 
 GLOBAL_MEANS_PATH = "./ccai_demo/additional/stats_v0/global_means.npy"
 GLOBAL_STDS_PATH = "./ccai_demo/additional/stats_v0/global_stds.npy"
@@ -27,10 +27,10 @@ LAND_SEA_MASK_PATH = "./ccai_demo/additional/stats_v0/land_sea_mask.npy"
 BATCH_SIZE = 1
 EPOCHS = 10
 SUBSET_TRAIN = None  # None to use all
-SUBSET_VAL = 3  # None to use all
+SUBSET_VAL = None  # None to use all
 LEARNING_RATE = 0.001
 SEQUENCE_LENGTH = 1
-SEQUENCE_LENGTH_VAL = 10 # this is our prediction horizon
+SEQUENCE_LENGTH_VAL = 39  # this is our prediction horizon
 
 # Model Architecture
 N_LAYER = 3
