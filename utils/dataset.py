@@ -12,7 +12,7 @@ from utils.config import *
 class H5GeometricDataset(torch.utils.data.Dataset):
     # data size is [batch, n_var, x, y] x = 721, y = 1440 for ERA5 n_var = 21
     # we want a Graph with 721*1440 nodes and 21 features and each node is connected to its 8 neighbors
-    def __init__(self, path, sequence_length=3, height=721, width=1440, features=21):
+    def __init__(self, path, sequence_length=3, height=721, width=1440, features=20):
         self.file_path = path
         self.dataset = None
 
@@ -52,7 +52,8 @@ class H5GeometricDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        sequences = [self.dataset[i].transpose(1, 2, 0).reshape(-1, self.features)
+        print(f'dataset shape: {self.dataset.shape}') 
+        sequences = [self.dataset[i].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
                      for i in range(index, index + self.sequence_length + 1)]
 
         # numpy array
