@@ -32,7 +32,11 @@ for year in YEARS:
 val_dataset = H5GeometricDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH_VAL, height=HEIGHT, width=WIDTH, features=N_VAR)
 validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-
+# %%
+# print sample
+data_sample = datasets[0][0]
+print(data_sample[0][:][0])
+print(data_sample[0].shape)
 # %% - further testing
 # data_testing = datasets[0]
 # print(len(data_testing))
@@ -43,6 +47,7 @@ validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SI
 # print(data_testing[0][0][0][100001])
 # print(data_testing[0][0][0][100000])
 
+# %% - calculate size of dataset class in mb
 
 model = deep_GNN(nfeat=N_VAR, nhid=N_HIDDEN, nclass=N_VAR, nlayers=N_LAYER, dt=DT, alpha=ALPHA, gamma=GAMMA, dropout=DROPOUT)
 model.to(DEVICE)

@@ -52,18 +52,16 @@ class H5GeometricDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        print(f'dataset shape: {self.dataset.shape}') 
         sequences = [self.dataset[i].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
                      for i in range(index, index + self.sequence_length + 1)]
 
         # numpy array
         sequences = np.stack(sequences, axis=0)
-        print(f'shape sequence: {sequences.shape}')
 
         # normalizing
         normalized_sequences = (sequences - self.means) / self.stds
-        print(f'shape means: {self.means.shape}')
-        print(f'shape normalized_sequences: {normalized_sequences.shape}')
+        # print(f'shape means: {self.means.shape}')
+        # print(f'shape normalized_sequences: {normalized_sequences.shape}')
 
         # to torch tensor
         x = torch.tensor(normalized_sequences, dtype=torch.float32).to(DEVICE)
