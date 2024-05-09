@@ -1,6 +1,6 @@
 
 import torch
-from utils.config import HEIGHT, WIDTH, N_VAR
+from utils.config import HEIGHT, WIDTH, N_VAR, STD, M, OUTPUT_FILE
 import wandb
 
 
@@ -33,7 +33,7 @@ def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Ten
     return result
 
 
-def evaluate(model, loader, device, subset=None, autoreg=True, log=True, prediction_len=10):
+def evaluate(model, loader, device, subset=None, autoreg=True, log=True, prediction_len=10, name="weather_graph_corrn", save=True):
     if model is not None:
         model.eval()  # Set the model to evaluation mode
     total_rmse = 0.0
@@ -42,8 +42,8 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
     print(total_batches)
     counter = -1
     prediction_len = min(prediction_len, len(loader))
-    acc_per_pred_step = torch.zeros(prediction_len).to(device)
-    rmse_per_pred_step = torch.zeros(prediction_len).to(device)
+    acc_per_pred_step = torch.zeros((prediction_len, N_VAR)).to(device)
+    rmse_per_pred_step = torch.zeros((prediction_len, N_VAR)).to(device)
     n_times = torch.zeros(prediction_len).to(device)
     total = total_batches / prediction_len
     print(f"Total sequences to evaluate: {total} with prediction_len: {prediction_len} ")
@@ -79,11 +79,12 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
             x_target = x_target.view(1, N_VAR, HEIGHT, WIDTH)
             predictions = predictions.view(1, N_VAR, HEIGHT, WIDTH)
             # Compute the RMSE and accuracy for each prediction step
-            rmse = weighted_rmse_channels(predictions, x_target)
-            acc = weighted_acc_channels(predictions, x_target)
 
-            acc_per_pred_step[counter] += acc.mean().item()
-            rmse_per_pred_step[counter] += rmse.mean().item()
+            rmse = weighted_rmse_channels(predictions, x_target) * STD
+            acc = weighted_acc_channels(predictions-M, x_target-M)
+
+            acc_per_pred_step[counter] += acc.squeeze()
+            rmse_per_pred_step[counter] += rmse.squeeze()
             n_times[counter] += 1
             # Log after every 100 batches
             # if batch_index % 10 == 0:
@@ -96,8 +97,8 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
     # if n_times is 0 cut acc_per_pred_step and rmse_per_pred_step else devide with value
     mask = n_times == 0
     n_times[mask] = 1
-    acc_per_pred_step /= n_times
-    rmse_per_pred_step /= n_times
+    acc_per_pred_step /= n_times.unsqueeze(-1)
+    rmse_per_pred_step /= n_times.unsqueeze(-1)
     # cut values where n_times is 0
     acc_per_pred_step = acc_per_pred_step[~mask]
     rmse_per_pred_step = rmse_per_pred_step[~mask]
@@ -106,16 +107,31 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
     avg_acc = acc_per_pred_step.mean().item()
     print(f"Average RMSE: {avg_rmse:.3f}, Average Accuracy: {avg_acc:.3f} over {total} seq and prediction_len {prediction_len}.")
 
-    print(f"Average RMSE per prediction step: {rmse_per_pred_step}")
-    print(f"Average Accuracy per prediction step: {acc_per_pred_step}")
+    print(f"Average RMSE per prediction step: {rmse_per_pred_step.mean(-1)}")
+    print(f"Average Accuracy per prediction step: {acc_per_pred_step.mean(-1)}")
+
+    if save:
+        import json
+        import os
+        # if exists append to the file with key "fourcastnet"
+        out = {name: {"rmse": rmse_per_pred_step.cpu().numpy().tolist(), "acc": acc_per_pred_step.cpu().numpy().tolist()}}
+        if os.path.exists(OUTPUT_FILE):
+            with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                data.update(out)
+            with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4)
+        else:
+            with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+                json.dump(out, f, indent=4)
 
     if log:
 
         wandb.log({"val_rmse": avg_rmse, "val_acc": avg_acc})
         # log histogram of acc_per_pred_step
         # log acc tensor to plot later
-        log_values_over_time(acc_per_pred_step, name="Accuracy")
-        log_values_over_time(rmse_per_pred_step, name="RMSE")
+        log_values_over_time(acc_per_pred_step.mean(-1), name="Accuracy")
+        log_values_over_time(rmse_per_pred_step.mean(-1), name="RMSE")
 
     return avg_rmse, avg_acc
 

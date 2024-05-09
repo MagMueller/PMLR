@@ -1,7 +1,7 @@
 import os
 import time
 import torch
-
+import numpy as np
 # Path Configuration
 now = time.strftime("%Y-%m-%d_%H-%M-%S")
 OUTPUT_PATH = os.path.join("output", now)
@@ -25,6 +25,7 @@ GLOBAL_STDS_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/global
 
 TIME_MEANS_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/time_means.npy")
 LAND_SEA_MASK_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/land_sea_mask.npy")
+OUTPUT_FILE = 'inference_results.json'
 
 # Training Configuration
 BATCH_SIZE = 1
@@ -63,3 +64,15 @@ elif torch.cuda.is_available():
     DEVICE = "cuda"
 else:
     DEVICE = "cpu"
+
+
+# for normalizing
+TIME_MEANS = np.load(TIME_MEANS_PATH)[0, :N_VAR]
+MEANS = np.load(GLOBAL_MEANS_PATH)[0, :N_VAR]
+STDS = np.load(GLOBAL_STDS_PATH)[0, :N_VAR]
+
+M = torch.as_tensor((TIME_MEANS - MEANS)/STDS)[:, 0:HEIGHT]
+M = torch.unsqueeze(M, 0)
+# these are needed to compute ACC and RMSE metrics
+M = M.to(DEVICE, dtype=torch.float)
+STD = torch.as_tensor(STDS[:, 0, 0]).to(DEVICE, dtype=torch.float)
