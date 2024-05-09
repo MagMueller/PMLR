@@ -33,8 +33,9 @@ def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Ten
     return result
 
 
-def evaluate(model, loader, device, subset=None, autoreg=True, log=True, prediction_len = 10):
-    model.eval()  # Set the model to evaluation mode
+def evaluate(model, loader, device, subset=None, autoreg=True, log=True, prediction_len=10):
+    if model is not None:
+        model.eval()  # Set the model to evaluation mode
     total_rmse = 0.0
     total_acc = 0.0
     total_batches = len(loader) if subset is None else subset
@@ -43,17 +44,17 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
     prediction_len = min(prediction_len, len(loader))
     acc_per_pred_step = torch.zeros(prediction_len).to(device)
     rmse_per_pred_step = torch.zeros(prediction_len).to(device)
-    n_times = torch.zeros(prediction_len ).to(device)
+    n_times = torch.zeros(prediction_len).to(device)
     total = total_batches / prediction_len
     print(f"Total sequences to evaluate: {total} with prediction_len: {prediction_len} ")
-    counter2= 0
-    with torch.no_grad():  # 
+    counter2 = 0
+    with torch.no_grad():  #
         # assume sorted loader
         for batch_index, data in enumerate(loader):
-            counter +=1
-            if counter == prediction_len: 
+            counter += 1
+            if counter == prediction_len:
                 counter = 0
-                counter2 +=1
+                counter2 += 1
                 print(f"Seq {counter2}/{total} - RMSE: {rmse_per_pred_step.mean():0.3f}, Accuracy: {acc_per_pred_step.mean():0.3f}")
                 if subset is not None and counter2 >= subset:
                     break
@@ -70,8 +71,11 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
                 x_input = predictions.view(batch_size, num_nodes, num_features)
 
             x_target = x[:, 1, :, :].view(batch_size, num_nodes, num_features)
+            if model is not None:
+                predictions = model(x_input, edge_index)
+            else:
+                predictions = x_input
 
-            predictions = model(x_input, edge_index)
             x_target = x_target.view(1, N_VAR, HEIGHT, WIDTH)
             predictions = predictions.view(1, N_VAR, HEIGHT, WIDTH)
             # Compute the RMSE and accuracy for each prediction step
@@ -88,8 +92,8 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
     if subset is not None:
         total_batches = min(total_batches, subset)
 
-    # Accumulate total metrics 
-    # if n_times is 0 cut acc_per_pred_step and rmse_per_pred_step else devide with value 
+    # Accumulate total metrics
+    # if n_times is 0 cut acc_per_pred_step and rmse_per_pred_step else devide with value
     mask = n_times == 0
     n_times[mask] = 1
     acc_per_pred_step /= n_times

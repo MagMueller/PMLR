@@ -10,9 +10,9 @@ if not os.path.exists(OUTPUT_PATH):
 
 local = True
 if local:
-    DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
+    DATA_PATH = ""
     YEARS = [2018]
-    VAL_FILE = os.path.join(DATA_PATH, "2018.h5")
+    VAL_FILE = os.path.join(DATA_PATH, "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/2018.h5")
 else:
     YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
     DATA_PATH = "/cluster/scratch/mmagnus/data"
