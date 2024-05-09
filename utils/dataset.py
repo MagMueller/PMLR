@@ -1,4 +1,5 @@
 
+from torch.utils.data.distributed import DistributedSampler
 import h5py
 import os
 import numpy as np
@@ -6,7 +7,7 @@ import torch
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils import grid
 from utils.config import DEVICE
-from utils.config import *
+from utils.config import MEANS, STDS, GLOBAL_MEANS_PATH, GLOBAL_STDS_PATH
 
 
 class H5GeometricDataset(torch.utils.data.Dataset):
@@ -42,8 +43,8 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         self.sequence_length = sequence_length
         self.edge_index = self.create_edge_index(self.height, self.width)
 
-        self.means = np.load(GLOBAL_MEANS_PATH)[0, :features]
-        self.stds = np.load(GLOBAL_STDS_PATH)[0, :features]
+        self.means = MEANS
+        self.stds = STDS
         self.means = self.means.reshape(1, 1, features)
         self.stds = self.stds.reshape(1, 1, features)
 
@@ -78,3 +79,9 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         # edge_index = edge_index.to_sparse() # not implemented on mps for mac
         # edge_index = edge_index.coalesce()
         return edge_index
+
+
+def get_dataloader(dataset, rank, world_size, batch_size):
+    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=True)
+    loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=sampler)
+    return loader

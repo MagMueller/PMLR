@@ -8,27 +8,31 @@ OUTPUT_PATH = os.path.join("output", now)
 if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
+
 local = True
 if local:
+    DATA_FILE_PATH = "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/"
     DATA_PATH = ""
     YEARS = [2018]
     VAL_FILE = os.path.join(DATA_PATH, "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/2018.h5")
 else:
     YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
     DATA_PATH = "/cluster/scratch/mmagnus/data"
+    DATA_FILE_PATH = DATA_PATH
     VAL_FILE = os.path.join(DATA_PATH, "2018_small.h5")
 
 
 GLOBAL_MEANS_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/global_means.npy")
-
 GLOBAL_STDS_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/global_stds.npy")
-
 TIME_MEANS_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/time_means.npy")
 LAND_SEA_MASK_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/land_sea_mask.npy")
+
 OUTPUT_FILE = 'inference_results.json'
 
 # Training Configuration
 BATCH_SIZE = 1
+BATCH_SIZE_VAL = 1
+
 EPOCHS = 10
 SUBSET_TRAIN = None  # None to use all
 SUBSET_VAL = None  # None to use all

@@ -15,19 +15,18 @@ class GraphCON(nn.Module):
 
     def forward(self, X0, Y0, edge_index):
         # set initial values of ODEs
-        X = X0
-        Y = Y0
+
         # solve ODEs using simple IMEX scheme
         for gnn in self.GNNs:
-            Y = Y + self.dt * (torch.relu(gnn(X, edge_index)) -
-                               self.alpha * Y - self.gamma * X)
-            X = X + self.dt * Y
+            Y0 = Y0 + self.dt * (torch.relu(gnn(X0, edge_index)) -
+                                 self.alpha * Y0 - self.gamma * X0)
+            X0 = X0 + self.dt * Y0
 
             if (self.dropout is not None):
-                Y = F.dropout(Y, self.dropout, training=self.training)
-                X = F.dropout(X, self.dropout, training=self.training)
+                Y0 = F.dropout(Y0, self.dropout, training=self.training)
+                X0 = F.dropout(X0, self.dropout, training=self.training)
 
-        return X, Y
+        return X0, Y0
 
 
 class deep_GNN(nn.Module):
@@ -40,12 +39,11 @@ class deep_GNN(nn.Module):
         self.graphcon = GraphCON(self.GNNs, dt, alpha, gamma, dropout)
         self.dec = nn.Linear(nhid, nclass)
 
-    def forward(self, x, edge_index):
+    def forward(self, x0, edge_index):
         # compute initial values of ODEs (encode input)
-        X0 = self.enc(x)
-        Y0 = X0
+        x0 = self.enc(x0)
         # stack GNNs using GraphCON
-        X, Y = self.graphcon(X0, Y0, edge_index)
+        x0, _ = self.graphcon(x0, x0, edge_index)
         # decode X state of GraphCON at final time for output nodes
-        output = self.dec(X)
-        return output
+        x0 = self.dec(x0)
+        return x0

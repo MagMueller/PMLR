@@ -1,3 +1,6 @@
+import os
+from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.distributed as dist
 import time
 import torch
 from torch import nn
@@ -8,15 +11,16 @@ def train_one_epoch(model: nn.Module, loader: torch.utils.data.DataLoader, optim
     model.train()
     total_loss = 0
     total_batches = len(loader) if subset is None else subset
-    for batch, data in enumerate(loader):
+    for batch, (x, edge_index) in enumerate(loader):
         if subset is not None and batch >= subset:
             break
         batch_start_time = time.time()
-        x, edge_index = data
+
         # Shape: [batch_size, sequence_length, num_nodes, num_features]
         x = x.to(device)
-        edge_index = edge_index.to(device).squeeze()
-        # print(f"X shape: {x.shape}, edge_index shape: {edge_index.shape}")
+        # assume all batches have the same edge_index -> take the first one
+        edge_index = edge_index.to(device)[0].squeeze()
+
         # Reshape to fit the model's expected input and prepare for rolling prediction
         batch_size, seq_len, num_nodes, num_features = x.shape
         losses = []
@@ -27,10 +31,10 @@ def train_one_epoch(model: nn.Module, loader: torch.utils.data.DataLoader, optim
         for t in range(seq_len - 1):
             x_input = x[:, t, :, :].view(batch_size, num_nodes, num_features)
             x_target = x[:, t + 1, :, :].view(batch_size, num_nodes, num_features)
-
+            del x
             # Model output for current timestep
             predictions = model(x_input, edge_index)
-
+            del x_input
             # Compute loss for the current timestep prediction
             loss = criterion(predictions, x_target)
             losses.append(loss)
@@ -45,3 +49,14 @@ def train_one_epoch(model: nn.Module, loader: torch.utils.data.DataLoader, optim
     print(f"Total time: {(time.time() - start_time)/60:.2f} minutes")
 
     return total_loss / len(loader)
+
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12345'
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+    torch.cuda.set_device(rank)
+
+
+def cleanup():
+    dist.destroy_process_group()

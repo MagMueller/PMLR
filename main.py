@@ -1,7 +1,6 @@
 
 # %% Imports
 import time
-from tracemalloc import start
 import matplotlib.pyplot as plt
 from model import deep_GNN
 import torch
@@ -22,23 +21,32 @@ wandb.init(project="PMLR")
 datasets = []
 train_loaders = []
 for year in YEARS:
-    data_file = os.path.join(DATA_PATH, f"{year}.h5")
+    data_file = os.path.join(DATA_FILE_PATH, f"{year}.h5")
     dataset = H5GeometricDataset(data_file, sequence_length=SEQUENCE_LENGTH, height=HEIGHT, width=WIDTH, features=N_VAR)
     datasets.append(dataset)
 
-    train_loader = torch.utils.data.DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
     train_loaders.append(train_loader)
 
 # create validation dataset
 val_dataset = H5GeometricDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH_VAL, height=HEIGHT, width=WIDTH, features=N_VAR)
-validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
+validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE_VAL, shuffle=False)
 
 # %%
-# print sample
-data_sample = datasets[0][0]
-print(data_sample[0][:][0])
-print(data_sample[0].shape)
-# %% - further testing
+# len(train_loader)
+# for batch in train_loader:
+#     # shape
+#     x, edge_index = batch
+#     print(f"x shape: {x.shape}, edge_index shape: {edge_index.shape}")
+#     break
+# # %% -
+# # print sample
+# data_sample = datasets[0][0]
+# print(len(data_sample))
+# print(data_sample[0][:][0])
+# print(data_sample[0].shape)
+# print(data_sample[1].shape)
+# # %% - further testing
 # data_testing = datasets[0]
 # print(len(data_testing))
 # print(len(data_testing[0]))
@@ -51,41 +59,47 @@ print(data_sample[0].shape)
 # %% - calculate size of dataset class in mb
 
 model = deep_GNN(nfeat=N_VAR, nhid=N_HIDDEN, nclass=N_VAR, nlayers=N_LAYER, dt=DT, alpha=ALPHA, gamma=GAMMA, dropout=DROPOUT)
+
+# Use DataParallel to wrap the model
+if torch.cuda.device_count() > 1:
+    print("Let's use", torch.cuda.device_count(), "GPUs!")
+    model = nn.DataParallel(model)
+
 model.to(DEVICE)
 wandb.watch(model, log="all", log_freq=100)
 
-# get model size
-model_size = sum(p.numel() for p in model.parameters() if p.requires_grad)
-model_size = model_size * 4 / 1024**2
-print(f"Model size: {model_size:0.2f} MB")
+# # get model size
+# model_size = sum(p.numel() for p in model.parameters() if p.requires_grad)
+# model_size = model_size * 4 / 1024**2
+# print(f"Model size: {model_size:0.2f} MB")
 
-# calc number of parameters
-num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-print(f"Number of parameters: {num_params}")
-# check - TODO: whats the right calculation?
-manuel_size = N_HIDDEN * N_VAR * 9
-print(f"Size of model: {manuel_size}")
+# # calc number of parameters
+# num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+# print(f"Number of parameters: {num_params}")
+# # check - TODO: whats the right calculation?
+# manuel_size = N_HIDDEN * N_VAR * 9
+# print(f"Size of model: {manuel_size}")
 
 # size in mb of val sample, 0 is x and 1 is edge_index
-start   = time.time()
+start = time.time()
 
-val_sample = next(iter(validation_loader))
-x, edge_index = val_sample
-val_size = x.numel() * x.element_size() / 1024**2
-print(f"Size of validation sample: {val_size:0.2f} MB")
-edge_size = edge_index.numel() * edge_index.element_size() / 1024**2
-print(f"Size of edge_index: {edge_size:0.2f} MB")
-print(f"time to load train: {(time.time() - start) / 60:.02f} min")
+# val_sample = next(iter(validation_loader))
+# x, edge_index = val_sample
+# val_size = x.numel() * x.element_size() / 1024**2
+# print(f"Size of validation sample: {val_size:0.2f} MB")
+# edge_size = edge_index.numel() * edge_index.element_size() / 1024**2
+# print(f"Size of edge_index: {edge_size:0.2f} MB")
+# print(f"time to load train: {(time.time() - start) / 60:.02f} min")
 
 # training sample in mb
-start   = time.time()
-train_sample = next(iter(train_loaders[0]))
-x, edge_index = train_sample
-train_size = x.numel() * x.element_size() / 1024**2
-print(f"\nSize of training sample: {train_size:0.2f} MB")
-edge_size = edge_index.numel() * edge_index.element_size() / 1024**2
-print(f"Size of edge_index: {edge_size:0.2f} MB")
-print(f"time to load train: {(time.time() - start) / 60:.02f} min")
+start = time.time()
+# train_sample = next(iter(train_loaders[0]))
+# x, edge_index = train_sample
+# train_size = x.numel() * x.element_size() / 1024**2
+# print(f"\nSize of training sample: {train_size:0.2f} MB")
+# edge_size = edge_index.numel() * edge_index.element_size() / 1024**2
+# print(f"Size of edge_index: {edge_size:0.2f} MB")
+# print(f"time to load train: {(time.time() - start) / 60:.02f} min")
 # %% - Train model
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
@@ -100,6 +114,8 @@ rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL, predic
 
 # %%
 # train model for every year with seperate dataloader
+# torch cleanup mps
+# torch.cuda.empty_cache()
 print(f"\n\n\nTraining model...")
 for epoch in range(EPOCHS):
     print(f"\n\n\nEpoch {epoch + 1}/{EPOCHS}")
@@ -116,7 +132,7 @@ for epoch in range(EPOCHS):
         # Currently no test set: DONE
         print(f"\nEvaluating...")
         # print(f"val loader: {validation_loader}")
-        rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL,prediction_len=PREDICTION_LENGTH )
+        rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL, prediction_len=PREDICTION_LENGTH)
         wandb.log({"epoch": epoch + 1})
 
         if acc > best_acc:
