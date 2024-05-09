@@ -8,20 +8,16 @@ OUTPUT_PATH = os.path.join("output", now)
 if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
-DATA_PATH = "/cluster/scratch/mmagnus/data"
-# DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
+local = True
+if local:
+    DATA_PATH = "./ccai_demo/data/FCN_ERA5_data_v0/out_of_sample"
+    YEARS = [2018]
+    VAL_FILE = os.path.join(DATA_PATH, "2018.h5")
+else:
+    YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
+    DATA_PATH = "/cluster/scratch/mmagnus/data"
+    VAL_FILE = os.path.join(DATA_PATH, "2018_small.h5")
 
-# DATA_PATH = "/cluster/scratch/mmagnus/data"
-
-YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
-# for local testing
-# YEARS = [2018, 2018]
-
-# for local testing
-# YEARS = [2018, 2018]
-
-VAL_FILE = os.path.join(DATA_PATH, "2018_small.h5")
-# VAL_FILE = os.path.join(DATA_PATH, "2018.h5")
 
 GLOBAL_MEANS_PATH = os.path.join(DATA_PATH, "ccai_demo/additional/stats_v0/global_means.npy")
 
@@ -36,7 +32,7 @@ EPOCHS = 10
 SUBSET_TRAIN = None  # None to use all
 SUBSET_VAL = None  # None to use all
 LEARNING_RATE = 0.001
-SEQUENCE_LENGTH = 1 # 1 will also load target so 1 -> 2
+SEQUENCE_LENGTH = 1  # 1 will also load target so 1 -> 2
 SEQUENCE_LENGTH_VAL = 1  # this is our prediction horizon
 PREDICTION_LENGTH = 39  # this is our prediction horizon
 
