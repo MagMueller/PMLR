@@ -1,6 +1,7 @@
 
 # %% Imports
 import time
+from tracemalloc import start
 import matplotlib.pyplot as plt
 from model import deep_GNN
 import torch
@@ -65,6 +66,26 @@ print(f"Number of parameters: {num_params}")
 manuel_size = N_HIDDEN * N_VAR * 9
 print(f"Size of model: {manuel_size}")
 
+# size in mb of val sample, 0 is x and 1 is edge_index
+start   = time.time()
+
+val_sample = next(iter(validation_loader))
+x, edge_index = val_sample
+val_size = x.numel() * x.element_size() / 1024**2
+print(f"Size of validation sample: {val_size:0.2f} MB")
+edge_size = edge_index.numel() * edge_index.element_size() / 1024**2
+print(f"Size of edge_index: {edge_size:0.2f} MB")
+print(f"time to load train: {(time.time() - start) / 60:.02f} min")
+
+# training sample in mb
+start   = time.time()
+train_sample = next(iter(train_loaders[0]))
+x, edge_index = train_sample
+train_size = x.numel() * x.element_size() / 1024**2
+print(f"\nSize of training sample: {train_size:0.2f} MB")
+edge_size = edge_index.numel() * edge_index.element_size() / 1024**2
+print(f"Size of edge_index: {edge_size:0.2f} MB")
+print(f"time to load train: {(time.time() - start) / 60:.02f} min")
 # %% - Train model
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
@@ -74,7 +95,7 @@ best_acc = 0
 # %%
 # inital evaluation
 print(f"\nEvaluating initial model...")
-rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL)
+rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL, prediction_len=PREDICTION_LENGTH)
 
 
 # %%
@@ -93,9 +114,9 @@ for epoch in range(EPOCHS):
 
         # eval
         # Currently no test set: DONE
-        print(f"\nEvaluating for year {YEARS[i]}...")
-        print(f"val loader: {validation_loader}")
-        rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL)
+        print(f"\nEvaluating...")
+        # print(f"val loader: {validation_loader}")
+        rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL,prediction_len=PREDICTION_LENGTH )
         wandb.log({"epoch": epoch + 1})
 
         if acc > best_acc:
