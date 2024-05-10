@@ -19,19 +19,13 @@ class H5GeometricDataset(torch.utils.data.Dataset):
 
         # check if file exists
         if not os.path.exists(self.file_path):
+            print(f"File {self.file_path} does not exist we will download it now")
             # download file
             # ```bash
             # wget https://portal.nersc.gov/project/m4134/ccai_demo.tar
             # tar -xvf ccai_demo.tar
             # rm ccai_demo.tar
             # ```
-            print(f"File {self.file_path} does not exist we will download it now")
-            # import urllib.request
-            # url = "https://portal.nersc.gov/project/m4134/ccai_demo.tar"
-            # urllib.request.urlretrieve(url, "ccai_demo.tar")
-            # os.system("tar -xvf ccai_demo.tar")
-            # os.system("rm ccai_demo.tar")
-            # print("Downloaded and extracted file successfully")
             # # approx 800 Mio values -> 3.2 GB
 
         with h5py.File(self.file_path, 'r') as file:
@@ -53,23 +47,22 @@ class H5GeometricDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        sequences = [self.dataset[i].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
-                     for i in range(index, index + self.sequence_length + 1)]
-
-        # numpy array
-        sequences = np.stack(sequences, axis=0)
+        x = self.dataset[index].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
+        # np
+        target = self.dataset[index + 1].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
 
         # normalizing
-        normalized_sequences = (sequences - self.means) / self.stds
+        x = (x - self.means) / self.stds
+        target = (target - self.means) / self.stds
         # print(f'shape means: {self.means.shape}')
         # print(f'shape normalized_sequences: {normalized_sequences.shape}')
 
         # to torch tensor
-        x = torch.tensor(normalized_sequences, dtype=torch.float32).to(DEVICE)
-        return x, self.edge_index
+        x = torch.tensor(x, dtype=torch.float32).to(DEVICE)
+        return x, self.edge_index, target
 
     def __len__(self):
-        return self.dataset_len - self.sequence_length
+        return self.dataset_len - 1
 
     def create_edge_index(self, height, width):
         # 721*1440*9 = 9344160 -> 9331198 edges (not at the border)
@@ -79,9 +72,3 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         # edge_index = edge_index.to_sparse() # not implemented on mps for mac
         # edge_index = edge_index.coalesce()
         return edge_index
-
-
-def get_dataloader(dataset, rank, world_size, batch_size):
-    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=True)
-    loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=sampler)
-    return loader
