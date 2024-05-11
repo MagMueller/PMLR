@@ -163,3 +163,7 @@ ccai_demo
 output/
 pmlr_env/
 ccai_demo.tar
+
+.DS_Store
+.vscode
+lightning_logs/

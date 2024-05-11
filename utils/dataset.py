@@ -6,82 +6,74 @@ import numpy as np
 import torch
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils import grid
-from utils.config import DEVICE
-from utils.config import MEANS, STDS, GLOBAL_MEANS_PATH, GLOBAL_STDS_PATH
+
+from utils.config import HEIGHT, N_VAR, WIDTH
 
 
 class H5GeometricDataset(torch.utils.data.Dataset):
     # data size is [batch, n_var, x, y] x = 721, y = 1440 for ERA5 n_var = 21
     # we want a Graph with 721*1440 nodes and 21 features and each node is connected to its 8 neighbors
-    def __init__(self, path, sequence_length=3, height=721, width=1440, features=20):
+    def __init__(self, path,  means=None, stds=None):
         self.file_path = path
         self.dataset = None
 
         # check if file exists
         if not os.path.exists(self.file_path):
+            print(f"File {self.file_path} does not exist we will download it now")
             # download file
             # ```bash
             # wget https://portal.nersc.gov/project/m4134/ccai_demo.tar
             # tar -xvf ccai_demo.tar
             # rm ccai_demo.tar
             # ```
-            print(f"File {self.file_path} does not exist we will download it now")
-            # import urllib.request
-            # url = "https://portal.nersc.gov/project/m4134/ccai_demo.tar"
-            # urllib.request.urlretrieve(url, "ccai_demo.tar")
-            # os.system("tar -xvf ccai_demo.tar")
-            # os.system("rm ccai_demo.tar")
-            # print("Downloaded and extracted file successfully")
             # # approx 800 Mio values -> 3.2 GB
 
         with h5py.File(self.file_path, 'r') as file:
             self.dataset_len = len(file["fields"])
 
-        self.height = height
-        self.width = width
-        self.features = features
-        self.sequence_length = sequence_length
+        self.height = HEIGHT
+        self.width = WIDTH
+        self.features = N_VAR
+
         self.edge_index = self.create_edge_index(self.height, self.width)
 
-        self.means = MEANS
-        self.stds = STDS
-        self.means = self.means.reshape(1, 1, features)
-        self.stds = self.stds.reshape(1, 1, features)
-
+        if means is None or stds is None:
+            self.means = None
+            self.stds = None
+        else:
+            self.means = means.squeeze()
+            self.stds = stds.squeeze()
         # TODO to sparse
 
     def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        sequences = [self.dataset[i].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
-                     for i in range(index, index + self.sequence_length + 1)]
-
-        # numpy array
-        sequences = np.stack(sequences, axis=0)
+        x = self.dataset[index].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
+        # np
+        target = self.dataset[index + 1].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
 
         # normalizing
-        normalized_sequences = (sequences - self.means) / self.stds
-        # print(f'shape means: {self.means.shape}')
-        # print(f'shape normalized_sequences: {normalized_sequences.shape}')
+        if self.means is not None and self.stds is not None:
+            x = (x - self.means) / self.stds
+            target = (target - self.means) / self.stds
 
         # to torch tensor
-        x = torch.tensor(normalized_sequences, dtype=torch.float32).to(DEVICE)
-        return x, self.edge_index
+        x = torch.tensor(x, dtype=torch.float32)  # .to(DEVICE)
+        target = torch.tensor(target, dtype=torch.float32)
+
+        # remove sequence length dimension
+        x = x.squeeze()
+        target = target.squeeze()
+        return x, self.edge_index, target
 
     def __len__(self):
-        return self.dataset_len - self.sequence_length
+        return self.dataset_len - 1
 
     def create_edge_index(self, height, width):
         # 721*1440*9 = 9344160 -> 9331198 edges (not at the border)
         (row, col), pos = grid(height=height, width=width)
-        edge_index = torch.stack([row, col], dim=0).to(torch.long).to(DEVICE)
+        edge_index = torch.stack([row, col], dim=0)  # .to(torch.long).to(DEVICE)
         edge_index = to_undirected(edge_index)
         # edge_index = edge_index.to_sparse() # not implemented on mps for mac
         # edge_index = edge_index.coalesce()
         return edge_index
-
-
-def get_dataloader(dataset, rank, world_size, batch_size):
-    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=True)
-    loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=sampler)
-    return loader

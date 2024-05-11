@@ -1,7 +1,14 @@
+from utils.config import BATCH_SIZE, BATCH_SIZE_VAL, LEARNING_RATE, MODEL_CONFIG
+from utils.eval import weighted_rmse_channels
+from torch.optim import Adam
+import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 from torch import nn
+from torch.utils.data import DistributedSampler
+from pytorch_lightning.loggers import WandbLogger
+from torch.utils.data import DataLoader
 
 
 class GraphCON(nn.Module):
@@ -47,3 +54,98 @@ class deep_GNN(nn.Module):
         # decode X state of GraphCON at final time for output nodes
         x0 = self.dec(x0)
         return x0
+
+
+class LitModel(pl.LightningModule):
+    def __init__(self, datasets, std, num_workers=1):
+        super().__init__()
+        self.model = deep_GNN(**MODEL_CONFIG)
+        self.criteria = weighted_rmse_channels
+        self.datasets = datasets
+        self.num_cpus = num_workers
+        self.std = std
+
+    def forward(self, x, edge_index):
+        # reshape?
+        # edge_index are all the same
+        edge_index = edge_index[0]
+        return self.model(x, edge_index)
+
+    def training_step(self, batch, batch_idx):
+        x, edge_index, target = batch
+        predictions = self(x, edge_index)
+        loss = self.criteria(predictions, target)
+        loss = (loss * self.std).mean()
+        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss
+
+    def check_format(self, batch):
+        # update std if needed to the device and dytpe of the batch
+        if self.std.dtype != batch[0].dtype:
+            print("Updating std to dtype")
+            self.std = self.std.to(batch[0].dtype)
+        if self.std.device != batch[0].device:
+            print("Updating std to device")
+            self.std = self.std.to(batch[0].device)
+
+    def validation_step(self, batch, batch_idx):
+        self.check_format(batch)
+        x, edge_index, target = batch
+        predictions = self(x, edge_index)
+        loss = self.criteria(predictions, target)
+        loss = (loss * self.std).mean()
+        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss
+
+    def configure_optimizers(self):
+        optimizer = Adam(self.parameters(), lr=LEARNING_RATE)
+        return optimizer
+
+    def on_epoch_end(self):
+        # Move to the next year after each epoch
+        pass
+
+    def train_dataloader(self):
+        if self.on_gpu:
+            sampler = DistributedSampler(self.datasets['train'], shuffle=True)
+            loader = DataLoader(
+                self.datasets['train'],
+                batch_size=BATCH_SIZE,
+                sampler=sampler,
+                drop_last=True,
+                num_workers=self.num_cpus,
+                persistent_workers=True
+            )
+        else:
+            loader = DataLoader(
+                self.datasets['train'],
+                batch_size=BATCH_SIZE,
+                drop_last=True,
+                shuffle=False,
+                num_workers=self.num_cpus,
+                persistent_workers=True
+            )
+        return loader
+
+    def val_dataloader(self):
+        # check if ddp is used
+        if self.on_gpu:
+            sampler = DistributedSampler(self.datasets['val'], shuffle=False)
+            loader = DataLoader(
+                self.datasets['val'],
+                batch_size=BATCH_SIZE_VAL,
+                sampler=sampler,
+                drop_last=True,
+                num_workers=self.num_cpus,
+                persistent_workers=True
+            )
+        else:
+            loader = DataLoader(
+                self.datasets['val'],
+                batch_size=BATCH_SIZE_VAL,
+                drop_last=True,
+                shuffle=False,
+                num_workers=self.num_cpus,
+                persistent_workers=True
+            )
+        return loader
