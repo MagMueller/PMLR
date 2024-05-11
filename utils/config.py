@@ -1,16 +1,10 @@
 import os
-import time
-import torch
-import numpy as np
+
 # Path Configuration
-now = time.strftime("%Y-%m-%d_%H-%M-%S")
-OUTPUT_PATH = os.path.join("output", now)
-if not os.path.exists(OUTPUT_PATH):
-    os.makedirs(OUTPUT_PATH)
+OUTPUT_PATH = os.path.join("output")
 
-
-local = True
-if local:
+LOCAL = True
+if LOCAL:
     DATA_FILE_PATH = "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/"
     DATA_PATH = ""
     YEARS = [2018]
@@ -41,14 +35,6 @@ SEQUENCE_LENGTH = 1  # 1 will also load target so 1 -> 2
 SEQUENCE_LENGTH_VAL = 1  # this is our prediction horizon
 PREDICTION_LENGTH = 39  # this is our prediction horizon
 
-# Model Architecture
-N_LAYER = 3
-N_HIDDEN = 64
-DT = 1.
-ALPHA = 1.
-GAMMA = 1.
-DROPOUT = 0.1
-
 # Data Dimensions and Variables
 HEIGHT = 721
 WIDTH = 1440
@@ -58,25 +44,19 @@ VARIABLES = [
     'r850', 'tcwv'
 ]
 N_VAR = 20
-print(f"Number of variables: {N_VAR}")
+# print(f"Number of variables: {N_VAR}")
 
-# Device Configuration
-if torch.backends.mps.is_available():
-    DEVICE = "mps"
-    os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
-elif torch.cuda.is_available():
-    DEVICE = "cuda"
-else:
-    DEVICE = "cpu"
+MODEL_CONFIG = {
+    "nfeat": N_VAR,
+    "nhid": 64,
+    "nclass": N_VAR,
+    "nlayers": 3,
+    "dt": 1.,
+    "alpha": 1.,
+    "gamma": 1.,
+    "dropout": 0.1
+}
 
 
-# for normalizing
-TIME_MEANS = np.load(TIME_MEANS_PATH)[0, :N_VAR]
-MEANS = np.load(GLOBAL_MEANS_PATH)[0, :N_VAR]
-STDS = np.load(GLOBAL_STDS_PATH)[0, :N_VAR]
-
-M = torch.as_tensor((TIME_MEANS - MEANS)/STDS)[:, 0:HEIGHT]
-M = torch.unsqueeze(M, 0)
-# these are needed to compute ACC and RMSE metrics
-M = M.to(DEVICE, dtype=torch.float)
-STD = torch.as_tensor(STDS[:, 0, 0]).to(DEVICE, dtype=torch.float)
+NUM_CPUS = os.cpu_count()
+print(f"Number of CPUs: {NUM_CPUS}")

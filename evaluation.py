@@ -19,6 +19,15 @@ import wandb
 
 
 # %% - Load data
+# Device Configuration
+if torch.backends.mps.is_available():
+    DEVICE = "mps"
+    os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+elif torch.cuda.is_available():
+    DEVICE = "cuda"
+else:
+    DEVICE = "cpu"
+
 
 # create validation dataset
 val_dataset = H5GeometricDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH_VAL, height=HEIGHT, width=WIDTH, features=N_VAR)
@@ -28,7 +37,7 @@ validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SI
 wandb.init(project="PMLR")
 
 # %% load model
-model = deep_GNN(nfeat=N_VAR, nhid=N_HIDDEN, nclass=N_VAR, nlayers=N_LAYER, dt=DT, alpha=ALPHA, gamma=GAMMA, dropout=DROPOUT)
+model = deep_GNN(**MODEL_CONFIG)
 model.to(DEVICE)
 # wandb checkpoint
 run = wandb.init()
