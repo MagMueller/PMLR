@@ -48,7 +48,7 @@ def main():
         "val": H5GeometricDataset(VAL_FILE, means=MEANS, stds=STDS)
     }
 
-    model = LitModel(datasets=datasets, num_workers=NUM_CPUS // 2, std=STD)
+    model = LitModel(datasets=datasets, num_workers=2, std=STD)
     # wandb_logger.watch(model, log='all', log_freq=100)
     trainer.fit(model)
 
