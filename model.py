@@ -76,7 +76,7 @@ class LitModel(pl.LightningModule):
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
         loss = (loss * self.std).mean()
-        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     def check_format(self, batch):
@@ -94,7 +94,7 @@ class LitModel(pl.LightningModule):
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
         loss = (loss * self.std).mean()
-        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     def configure_optimizers(self):
@@ -106,46 +106,23 @@ class LitModel(pl.LightningModule):
         pass
 
     def train_dataloader(self):
-        if self.on_gpu:
-            sampler = DistributedSampler(self.datasets['train'], shuffle=True)
-            loader = DataLoader(
-                self.datasets['train'],
-                batch_size=BATCH_SIZE,
-                sampler=sampler,
-                drop_last=True,
-                num_workers=self.num_cpus,
-                persistent_workers=True
-            )
-        else:
-            loader = DataLoader(
-                self.datasets['train'],
-                batch_size=BATCH_SIZE,
-                drop_last=True,
-                shuffle=False,
-                num_workers=self.num_cpus,
-                persistent_workers=True
-            )
+        loader = DataLoader(
+            self.datasets['train'],
+            batch_size=BATCH_SIZE,
+            drop_last=True,
+            shuffle=False,
+            num_workers=self.num_cpus,
+            persistent_workers=True
+        )
         return loader
 
     def val_dataloader(self):
-        # check if ddp is used
-        if self.on_gpu:
-            sampler = DistributedSampler(self.datasets['val'], shuffle=False)
-            loader = DataLoader(
-                self.datasets['val'],
-                batch_size=BATCH_SIZE_VAL,
-                sampler=sampler,
-                drop_last=True,
-                num_workers=self.num_cpus,
-                persistent_workers=True
-            )
-        else:
-            loader = DataLoader(
-                self.datasets['val'],
-                batch_size=BATCH_SIZE_VAL,
-                drop_last=True,
-                shuffle=False,
-                num_workers=self.num_cpus,
-                persistent_workers=True
-            )
+        loader = DataLoader(
+            self.datasets['val'],
+            batch_size=BATCH_SIZE_VAL,
+            drop_last=True,
+            shuffle=False,
+            num_workers=self.num_cpus,
+            persistent_workers=True
+        )
         return loader
