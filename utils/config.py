@@ -5,7 +5,7 @@ import torch
 # Path Configuration
 OUTPUT_PATH = os.path.join("output")
 
-LOCAL = False
+LOCAL = True
 if LOCAL:
     DATA_FILE_PATH = "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/"
     DATA_PATH = ""
@@ -14,10 +14,10 @@ if LOCAL:
     STRATEGY = "auto"
 
 else:
-    YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017] # 
+    YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
     DATA_PATH = "/cluster/scratch/mmagnus/data"
     DATA_FILE_PATH = DATA_PATH
-    VAL_FILE = os.path.join(DATA_PATH, "2018.h5") # 2018_small.h5
+    VAL_FILE = os.path.join(DATA_PATH, "2018.h5")  # 2018_small.h5
     STRATEGY = "ddp"
 
 
