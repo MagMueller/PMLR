@@ -1,16 +1,18 @@
 import os
 
+import torch
+
 # Path Configuration
 OUTPUT_PATH = os.path.join("output")
 
-LOCAL = True
+LOCAL = False
 if LOCAL:
     DATA_FILE_PATH = "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/"
     DATA_PATH = ""
     YEARS = [2018]
     VAL_FILE = os.path.join(DATA_PATH, "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/2018.h5")
 else:
-    YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
+    YEARS = [2009] # , 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
     DATA_PATH = "/cluster/scratch/mmagnus/data"
     DATA_FILE_PATH = DATA_PATH
     VAL_FILE = os.path.join(DATA_PATH, "2018_small.h5")
@@ -60,3 +62,5 @@ MODEL_CONFIG = {
 
 NUM_CPUS = os.cpu_count()
 print(f"Number of CPUs: {NUM_CPUS}")
+# num gpu
+NUM_GPUS = torch.cuda.device_count()
