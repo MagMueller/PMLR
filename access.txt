@@ -1,0 +1,159 @@
+   Account  Partition       User                  QOS 
+---------- ---------- ---------- -------------------- 
+     es_he               mmagnus               normal 
+    public               mmagnus               normal 
+gpuhe/es_+               mmagnus               normal 
+ hpc/es_he               mmagnus               normal 
+hpc/public               mmagnus               normal 
+gpupr/es_+               mmagnus               normal 
+ gpu/es_he               mmagnus               normal 
+bigmem/es+               mmagnus               normal 
+bigmem/pu+               mmagnus               normal 
+normal/es+               mmagnus               normal 
+normal/pu+               mmagnus               normal 
+ultramem/+               mmagnus               normal 
+
+Partition: gpuhe.120h
+PartitionName=gpuhe.120h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=1-12:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=15-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-g3-[049-081,083-084],eu-g4-[001-019,021-033],eu-g6-[001-040]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=13696 TotalNodes=107 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=13696,mem=51716900M,node=107,billing=219279656,gres/gpu=856,gres/gpu:nvidia_geforce_rtx_3090=256,gres/gpu:nvidia_geforce_rtx_4090=320,gres/gpu:quadro_rtx_6000=160,gres/gpumem=2757369004032
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpuhe.24h
+PartitionName=gpuhe.24h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=08:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=2-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-g3-[049-081,083-084],eu-g4-[001-019,021-033],eu-g6-[001-040]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=13696 TotalNodes=107 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=13696,mem=51716900M,node=107,billing=219279656,gres/gpu=856,gres/gpu:nvidia_geforce_rtx_3090=256,gres/gpu:nvidia_geforce_rtx_4090=320,gres/gpu:quadro_rtx_6000=160,gres/gpumem=2757369004032
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpuhe.4h
+PartitionName=gpuhe.4h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=01:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-g3-[049-081,083-084],eu-g4-[001-033],eu-g6-[001-040]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=13824 TotalNodes=108 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=13824,mem=52218100M,node=108,billing=221404744,gres/gpu=864,gres/gpu:nvidia_geforce_rtx_3090=264,gres/gpu:nvidia_geforce_rtx_4090=320,gres/gpu:quadro_rtx_6000=160,gres/gpumem=2783138807808
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpu.120h
+PartitionName=gpu.120h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=1-12:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=15-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-g3-[028-046,048],eu-lo-g2-[021-040],eu-lo-g3-[001-004],eu-lo-s4-[061-067,071-082,084-085]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=4436 TotalNodes=65 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=4436,mem=26912600M,node=65,billing=114109424,gres/gpu=520,gres/gpu:nvidia_geforce_gtx_1080_ti=56,gres/gpu:nvidia_geforce_rtx_2080_ti=464,gres/gpumem=767725404160
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpu.24h
+PartitionName=gpu.24h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=08:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=2-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-g3-[028-046,048],eu-lo-g2-[021-040],eu-lo-g3-[001-004],eu-lo-s4-[061-067,071-082,084-085]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=4436 TotalNodes=65 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=4436,mem=26912600M,node=65,billing=114109424,gres/gpu=520,gres/gpu:nvidia_geforce_gtx_1080_ti=56,gres/gpu:nvidia_geforce_rtx_2080_ti=464,gres/gpumem=767725404160
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpu.4h
+PartitionName=gpu.4h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=01:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-g3-[028-048],eu-lo-g2-[021-040],eu-lo-g3-[001-004],eu-lo-s4-[061-067,071-085]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=4600 TotalNodes=67 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=4600,mem=27809300M,node=67,billing=117911432,gres/gpu=536,gres/gpu:nvidia_geforce_gtx_1080_ti=56,gres/gpu:nvidia_geforce_rtx_2080_ti=480,gres/gpumem=791347724288
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpupr.120h
+PartitionName=gpupr.120h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=1-12:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=5-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-a65-[01-07],eu-lo-dgx1-[001-003],eu-ts-[01-02]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=632 TotalNodes=12 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=632,mem=10450G,node=12,billing=45371392,gres/gpu=102,gres/gpu:nvidia_a100-pcie-40gb=24,gres/gpu:nvidia_a100_80gb_pcie=46,gres/gpu:tesla_v100-sxm2-32gb=24,gres/gpumem=695784701952
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpupr.24h
+PartitionName=gpupr.24h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=08:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=2-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-a65-[01-07],eu-lo-dgx1-[001-003],eu-ts-[01-02]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=632 TotalNodes=12 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=632,mem=10450G,node=12,billing=45371392,gres/gpu=102,gres/gpu:nvidia_a100-pcie-40gb=24,gres/gpu:nvidia_a100_80gb_pcie=46,gres/gpu:tesla_v100-sxm2-32gb=24,gres/gpumem=695784701952
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
+Partition: gpupr.4h
+PartitionName=gpupr.4h
+   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL
+   AllocNodes=ALL Default=NO QoS=N/A
+   DefaultTime=01:00:00 DisableRootJobs=NO ExclusiveUser=NO GraceTime=0 Hidden=NO
+   MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED
+   Nodes=eu-a65-[01-07],eu-lo-dgx1-[001-003],eu-ts-[01-02]
+   PriorityJobFactor=1000 PriorityTier=1000 RootOnly=NO ReqResv=NO OverSubscribe=NO
+   OverTimeLimit=NONE PreemptMode=OFF
+   State=UP TotalCPUs=632 TotalNodes=12 SelectTypeParameters=NONE
+   JobDefaults=(null)
+   DefMemPerCPU=1024 MaxMemPerNode=UNLIMITED
+   TRES=cpu=632,mem=10450G,node=12,billing=45371392,gres/gpu=102,gres/gpu:nvidia_a100-pcie-40gb=24,gres/gpu:nvidia_a100_80gb_pcie=46,gres/gpu:tesla_v100-sxm2-32gb=24,gres/gpumem=695784701952
+   TRESBillingWeights=CPU=0.00782,MEM=4.24M,GRES/gpu=0.0625
+
+
