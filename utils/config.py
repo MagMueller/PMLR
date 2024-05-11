@@ -5,7 +5,7 @@ import torch
 # Path Configuration
 OUTPUT_PATH = os.path.join("output")
 
-LOCAL = True
+LOCAL = False
 if LOCAL:
     DATA_FILE_PATH = "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/"
     DATA_PATH = ""
