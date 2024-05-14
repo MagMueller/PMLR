@@ -62,6 +62,13 @@ MODEL_CONFIG = {
     "dropout": 0.1
 }
 
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif torch.backends.mps.is_available():
+    DEVICE = "mps"
+    os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+else:
+    DEVICE = "cpu"
 
 NUM_CPUS = os.cpu_count()
 print(f"Number of CPUs: {NUM_CPUS}")

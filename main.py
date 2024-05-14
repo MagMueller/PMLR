@@ -5,6 +5,7 @@ from ast import arg
 from pytorch_lightning.loggers import WandbLogger
 
 import time
+
 from model import deep_GNN
 import torch
 from torch import device, nn
@@ -23,6 +24,7 @@ import numpy as np
 from torch.utils.data import ConcatDataset
 from pytorch_lightning.callbacks import ModelCheckpoint
 
+
 def main(args):
 
     checkpoint_callback = ModelCheckpoint(
@@ -32,23 +34,27 @@ def main(args):
         save_top_k=5,
         mode='min'
     )
-
-
-    wandb_logger = WandbLogger(project='PMLR', log_model="all")
-
+    run_name = ""
+    if args.eval:
+        run_name = "eval_model"
+        if args.stupid:
+            run_name = "eval_stupid"
+        wandb_logger = WandbLogger(project='PMLR', name=run_name, log_model="all")
+    else:
+        wandb_logger = WandbLogger(project='PMLR', log_model="all")
 
     trainer = Trainer(
         logger=wandb_logger,
         max_epochs=EPOCHS,
         strategy=STRATEGY,
-        num_nodes= args.nodes,
-        devices=args.devices, 
+        num_nodes=args.nodes,
+        devices=args.devices,
         precision=32,
         # limit_train_batches=12,
         # limit_val_batches=12,
         accumulate_grad_batches=4,
         profiler="simple",
-         callbacks=[checkpoint_callback]
+        callbacks=[checkpoint_callback]
     )
     print(f"Number of devices: {trainer.num_devices}")
 
@@ -63,10 +69,23 @@ def main(args):
         "val": H5GeometricDataset(VAL_FILE, means=MEANS, stds=STDS)
     }
 
-    model = LitModel(datasets=datasets, num_workers= args.devices, std=STD)
     # wandb_logger.watch(model, log='all', log_freq=100)
-    wandb_logger.watch(model, log='all', log_freq=100)
-    trainer.fit(model)
+
+    if args.eval:
+        # use script download_artifact.py to download the model
+        path = "artifacts/model-4yobs5ix:v9"
+        stupid = args.stupid
+
+        model = LitModel.load_from_checkpoint(os.path.join(path, "model.ckpt"), datasets=datasets, num_workers=args.devices, std=STD, map_location=DEVICE, stupid=stupid)
+        print(f"autoregressive step is {model.count_autoreg_steps}")
+        print(f"Model evaluation")
+        trainer.test(model)
+        return
+    else:
+        model = LitModel(datasets=datasets, num_workers=args.devices, std=STD)
+
+        wandb_logger.watch(model, log='all', log_freq=100)
+        trainer.fit(model)
 
 
 # %%
@@ -76,6 +95,8 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--devices", type=int, default=1)
     argparser.add_argument("--nodes", type=int, default=1)
+    argparser.add_argument("--eval", action="store_true")
+    argparser.add_argument("--stupid", action="store_true")
     args = argparser.parse_args()
 
     main(args)

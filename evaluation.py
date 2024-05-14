@@ -43,7 +43,7 @@ model.to(DEVICE)
 run = wandb.init()
 file = "v42"
 file = "latest"
-artifact = run.use_artifact('forl-traffic/PMLR/best_model:' + file, type='model')
+artifact = run.use_artifact('forl-traffic/PMLR/model-4yobs5ix:' + file, type='model')
 artifact_dir = artifact.download()
 
 # %%

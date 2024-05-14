@@ -57,13 +57,16 @@ class deep_GNN(nn.Module):
 
 
 class LitModel(pl.LightningModule):
-    def __init__(self, datasets, std, num_workers=1):
+    def __init__(self, datasets, std, num_workers=1, stupid=False):
         super().__init__()
         self.model = deep_GNN(**MODEL_CONFIG)
         self.criteria = weighted_rmse_channels
         self.datasets = datasets
         self.num_cpus = num_workers
         self.std = std
+        self.last_prediction = None
+        self.count_autoreg_steps = 0
+        self.stupid = stupid
 
     def forward(self, x, edge_index):
         # reshape?
@@ -97,6 +100,31 @@ class LitModel(pl.LightningModule):
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
+    def test_step(self, batch, batch_idx):
+        # autoregressive call model on itself and feed prediction back in, calculate loss with next timestep,
+        # assume batch to be [batch_size, h*w, n_var]
+        # assume batch size to be 1
+        # save prediction with self.last_prediction and reuse it for the next timestep,
+        # count
+        self.check_format(batch)
+        x, edge_index, target = batch
+
+        if self.count_autoreg_steps != 0:
+            x = self.last_prediction
+
+        if self.stupid:
+            predictions = x
+        else:
+            predictions = self(x, edge_index)
+
+        loss = self.criteria(predictions, target)
+        loss = (loss * self.std).mean()
+        self.last_prediction = predictions
+        self.log('autoreg_rmse', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.count_autoreg_steps += 1
+        print(f"Test step: {self.count_autoreg_steps}")
+        return loss
+
     def configure_optimizers(self):
         optimizer = Adam(self.parameters(), lr=LEARNING_RATE)
         return optimizer
@@ -124,5 +152,15 @@ class LitModel(pl.LightningModule):
             shuffle=False,
             num_workers=self.num_cpus,
             persistent_workers=True
+        )
+        return loader
+
+    def test_dataloader(self):
+        loader = DataLoader(
+            self.datasets['val'],
+            batch_size=BATCH_SIZE_VAL,
+            drop_last=True,
+            shuffle=False,
+            num_workers=0,
         )
         return loader
