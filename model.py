@@ -76,7 +76,7 @@ class LitModel(pl.LightningModule):
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
         loss = (loss * self.std).mean()
-        self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def check_format(self, batch):
@@ -94,7 +94,7 @@ class LitModel(pl.LightningModule):
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
         loss = (loss * self.std).mean()
-        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def configure_optimizers(self):
