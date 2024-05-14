@@ -167,3 +167,7 @@ ccai_demo.tar
 .DS_Store
 .vscode
 lightning_logs/
+
+# you can find them in wandb
+checkpoints/ 
+log/
