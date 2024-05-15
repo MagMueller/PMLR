@@ -54,7 +54,9 @@ def main(args):
         # limit_val_batches=12,
         accumulate_grad_batches=4,
         profiler="simple",
-        callbacks=[checkpoint_callback]
+        callbacks=[checkpoint_callback],
+        limit_val_batches=200,
+        limit_test_batches=40,
     )
     print(f"Number of devices: {trainer.num_devices}")
 
