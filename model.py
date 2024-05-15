@@ -119,7 +119,7 @@ class LitModel(pl.LightningModule):
             predictions = self(x, edge_index)
 
         loss = self.criteria(predictions, target)
-        loss = (loss * self.std).mean()
+        loss = (loss * self.std.squeeze()).mean()
         self.last_prediction = predictions
         self.log('autoreg_rmse', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.count_autoreg_steps += 1

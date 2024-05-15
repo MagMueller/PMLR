@@ -73,10 +73,11 @@ def main(args):
 
     if args.eval:
         # use script download_artifact.py to download the model
-        path = "artifacts/model-4yobs5ix:v9"
+        path = "artifacts/model-4yobs5ix:v9" + "/model.ckpt"
         stupid = args.stupid
+        model = deep_GNN(**MODEL_CONFIG)
+        model = LitModel.load_from_checkpoint(checkpoint_path=path, datasets=datasets, std=STD, stupid=stupid, model=model)
 
-        model = LitModel.load_from_checkpoint(os.path.join(path, "model.ckpt"), datasets=datasets, num_workers=args.devices, std=STD, map_location=DEVICE, stupid=stupid)
         print(f"autoregressive step is {model.count_autoreg_steps}")
         print(f"Model evaluation")
         trainer.test(model)
