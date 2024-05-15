@@ -8,6 +8,14 @@ OUTPUT_PATH = os.path.join("output")
 LOCAL = True
 if LOCAL:
     DATA_FILE_PATH = "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/"
+    # check if exists
+    if not os.path.exists(DATA_FILE_PATH):
+        # print download from
+        # wget https://portal.nersc.gov/project/m4134/ccai_demo.tar
+        # tar -xvf ccai_demo.tar
+        # rm ccai_demo.tar
+        raise FileNotFoundError(
+            f"Data path {DATA_FILE_PATH} does not exist \n please do the following: \n wget https://portal.nersc.gov/project/m4134/ccai_demo.tar \n tar -xvf ccai_demo.tar \n rm ccai_demo.tar")
     DATA_PATH = ""
     YEARS = [2018]
     VAL_FILE = os.path.join(DATA_PATH, "ccai_demo/data/FCN_ERA5_data_v0/out_of_sample/2018.h5")
@@ -74,7 +82,7 @@ NUM_CPUS = os.cpu_count()
 print(f"Number of CPUs: {NUM_CPUS}")
 # memery per cpu
 CPU_MEM = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES') / (1024. ** 3)
-print(f"Memory per CPU in GB: {CPU_MEM}")
+print(f"Memory CPU in GB: {CPU_MEM}")
 # num gpu
 if torch.cuda.is_available():
     NUM_GPUS = torch.cuda.device_count()

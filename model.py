@@ -57,9 +57,10 @@ class deep_GNN(nn.Module):
 
 
 class LitModel(pl.LightningModule):
-    def __init__(self, datasets, std, num_workers=1, stupid=False):
+    def __init__(self, datasets, std, num_workers=1, stupid=False, model=None):
         super().__init__()
-        self.model = deep_GNN(**MODEL_CONFIG)
+        if model is not None:
+            self.model = deep_GNN(**MODEL_CONFIG)
         self.criteria = weighted_rmse_channels
         self.datasets = datasets
         self.num_cpus = num_workers
@@ -74,12 +75,12 @@ class LitModel(pl.LightningModule):
         edge_index = edge_index[0]
         return self.model(x, edge_index)
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx=0):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
         loss = (loss * self.std).mean()
-        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def check_format(self, batch):
