@@ -1,4 +1,4 @@
-from utils.config import BATCH_SIZE, BATCH_SIZE_VAL, LEARNING_RATE, MODEL_CONFIG
+from utils.configs.config import BATCH_SIZE, BATCH_SIZE_VAL, LEARNING_RATE, MODEL_CONFIG
 from utils.eval import weighted_rmse_channels
 from torch.optim import Adam
 import pytorch_lightning as pl

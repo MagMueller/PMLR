@@ -1,8 +1,8 @@
 # %%
-from utils.config import N_VAR
-from utils.config import VARIABLES
+from utils.configs.config import N_VAR
+from utils.configs.config import VARIABLES
 import numpy as np
-from utils.config import OUTPUT_FILE
+from utils.configs.config import OUTPUT_FILE
 import json
 import time
 import matplotlib.pyplot as plt
@@ -14,7 +14,7 @@ import os
 from utils.dataset import H5GeometricDataset
 from utils.eval import evaluate
 from utils.train import train_one_epoch
-from utils.config import *
+from utils.configs.config import *
 import wandb
 
 

@@ -1,5 +1,5 @@
 from utils.metrics import weighted_rmse_channels, weighted_acc_channels
-from utils.config import HEIGHT, WIDTH, N_VAR
+from utils.configs.config import HEIGHT, WIDTH, N_VAR
 import torch
 import wandb
 

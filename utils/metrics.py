@@ -1,6 +1,6 @@
 
 import torch
-from utils.config import HEIGHT, WIDTH, N_VAR
+from utils.configs.config import HEIGHT, WIDTH, N_VAR
 
 
 def lat(j: torch.Tensor, num_lat: int) -> torch.Tensor:

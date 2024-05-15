@@ -7,7 +7,7 @@ import torch
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils import grid
 
-from utils.config import HEIGHT, N_VAR, WIDTH
+from utils.configs.config import HEIGHT, N_VAR, WIDTH
 
 
 class H5GeometricDataset(torch.utils.data.Dataset):

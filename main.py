@@ -14,7 +14,7 @@ import os
 from utils.dataset import H5GeometricDataset
 from utils.eval import evaluate
 from utils.train import train_one_epoch
-from utils.config import *
+from utils.configs.config import *
 import wandb
 from pytorch_lightning.loggers import WandbLogger
 import pytorch_lightning as pl
