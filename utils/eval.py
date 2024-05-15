@@ -86,7 +86,11 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
         import json
         import os
         # if exists append to the file with key "fourcastnet"
-        out = {name: {"rmse": rmse_per_pred_step.cpu().numpy().tolist(), "acc": acc_per_pred_step.cpu().numpy().tolist()}}
+        out = {name: {
+            "rmse": rmse_per_pred_step.cpu().numpy().tolist(), 
+            "acc": acc_per_pred_step.cpu().numpy().tolist(),
+            "temps": predictions.cpu().numpy().tolist()
+        }}
         if os.path.exists(OUTPUT_FILE):
             with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
                 data = json.load(f)
