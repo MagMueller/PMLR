@@ -59,8 +59,10 @@ class deep_GNN(nn.Module):
 class LitModel(pl.LightningModule):
     def __init__(self, datasets, std, num_workers=1, stupid=False, model=None):
         super().__init__()
-        if model is not None:
+        if model is None:
             self.model = deep_GNN(**MODEL_CONFIG)
+        else:
+            self.model = model
         self.criteria = weighted_rmse_channels
         self.datasets = datasets
         self.num_cpus = num_workers
@@ -79,8 +81,10 @@ class LitModel(pl.LightningModule):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
-        loss = (loss * self.std.squeeze()).mean()
+        loss_scaled = (loss * self.std.squeeze()).mean()
+        loss = (loss).mean()
         self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log(name='train_loss_scaled', value=loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def check_format(self, batch):
@@ -97,7 +101,9 @@ class LitModel(pl.LightningModule):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
-        loss = (loss * self.std.squeeze()).mean()
+        loss_scaled = (loss * self.std.squeeze()).mean()
+        loss = (loss).mean()
+        self.log('val_loss_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
@@ -119,7 +125,9 @@ class LitModel(pl.LightningModule):
             predictions = self(x, edge_index)
 
         loss = self.criteria(predictions, target)
-        loss = (loss * self.std.squeeze()).mean()
+        loss_scaled = (loss * self.std.squeeze()).mean()
+        loss = (loss).mean()
+        self.log('autoreg_rmse_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.last_prediction = predictions
         self.log('autoreg_rmse', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.count_autoreg_steps += 1
