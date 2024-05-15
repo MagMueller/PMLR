@@ -1,53 +1,22 @@
-from typing import Any
+from typing import Any, Dict, Optional
 from argparse import Namespace
-import typing
 
 
 class DotDict(Namespace):
-    """A simple class that builds upon `argparse.Namespace`
-    in order to make chained attributes possible."""
+    """A class that extends `argparse.Namespace` for dynamic attribute access with better IDE support."""
 
-    def __init__(self, temp=False, key=None, parent=None) -> None:
-        self._temp = temp
-        self._key = key
-        self._parent = parent
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
-    def __eq__(self, other):
-        if not isinstance(other, DotDict):
-            return NotImplemented
-        return vars(self) == vars(other)
+    def __getattr__(self, name: str) -> Any:
+        if name not in self.__dict__:
+            self.__dict__[name] = DotDict()
+        return self.__dict__[name]
 
-    def __getattr__(self, __name: str) -> Any:
-        if __name not in self.__dict__ and not self._temp:
-            self.__dict__[__name] = DotDict(temp=True, key=__name, parent=self)
-        else:
-            del self._parent.__dict__[self._key]
-            raise AttributeError("No attribute '%s'" % __name)
-        return self.__dict__[__name]
+    def __setattr__(self, name: str, value: Any) -> None:
+        if isinstance(value, dict):
+            value = DotDict(**value)
+        super().__setattr__(name, value)
 
-    def __repr__(self) -> str:
-        item_keys = [k for k in self.__dict__ if not k.startswith("_")]
-
-        if len(item_keys) == 0:
-            return "DotDict()"
-        elif len(item_keys) == 1:
-            key = item_keys[0]
-            val = self.__dict__[key]
-            return "DotDict(%s=%s)" % (key, repr(val))
-        else:
-            return "DotDict(%s)" % ", ".join(
-                "%s=%s" % (key, repr(val)) for key, val in self.__dict__.items()
-            )
-
-    @classmethod
-    def from_dict(cls, original: typing.Mapping[str, any]) -> "DotDict":
-        """Create a DotDict from a (possibly nested) dict `original`.
-        Warning: this method should not be used on very deeply nested inputs,
-        since it's recursively traversing the nested dictionary values.
-        """
-        dd = DotDict()
-        for key, value in original.items():
-            if isinstance(value, typing.Mapping):
-                value = cls.from_dict(value)
-            setattr(dd, key, value)
-        return dd
+    def to_dict(self) -> Dict[str, Any]:
+        return {k: (v.to_dict() if isinstance(v, DotDict) else v) for k, v in self.__dict__.items()}

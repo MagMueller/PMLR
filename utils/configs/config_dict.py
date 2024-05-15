@@ -28,6 +28,47 @@ def get_config():
         config.VAL_FILE = os.path.join(config.DATA_PATH, "2018.h5")
         config.STRATEGY = "ddp"
 
+    config.GLOBAL_MEANS_PATH = os.path.join(config.DATA_PATH, "ccai_demo/additional/stats_v0/global_means.npy")
+    config.GLOBAL_STDS_PATH = os.path.join(config.DATA_PATH, "ccai_demo/additional/stats_v0/global_stds.npy")
+    config.TIME_MEANS_PATH = os.path.join(config.DATA_PATH, "ccai_demo/additional/stats_v0/time_means.npy")
+    config.LAND_SEA_MASK_PATH = os.path.join(config.DATA_PATH, "ccai_demo/additional/stats_v0/land_sea_mask.npy")
+
+    config.OUTPUT_FILE = 'inference_results.json'
+
+    # Training Configuration
+    config.BATCH_SIZE = 1
+    config.BATCH_SIZE_VAL = 1
+
+    config.EPOCHS = 20
+    config.SUBSET_TRAIN = None
+    config.SUBSET_VAL = None
+    config.LEARNING_RATE = 0.001
+    config.SEQUENCE_LENGTH = 1
+    config.SEQUENCE_LENGTH_VAL = 1
+    config.PREDICTION_LENGTH = 39
+
+    # Data Dimensions and Variables
+    config.HEIGHT = 721
+    config.WIDTH = 1440
+
+    config.VARIABLES = [
+        'u10', 'v10', 't2m', 'sp', 'msl', 't850', 'u1000', 'v1000', 'z1000',
+        'u850', 'v850', 'z850', 'u500', 'v500', 'z500', 't500', 'z50', 'r500',
+        'r850', 'tcwv'
+    ]
+    config.N_VAR = 20
+
+    # model
+    config.MODEL_CONFIG = {
+        "num_layers": 3,
+        "hidden_dim": 64,
+        "dropout": 0.1,
+        "num_heads": 8,
+        "input_dim": config.N_VAR,
+        "output_dim": config.N_VAR,
+        "time_dim": 1
+    }
+
     # Compute-dependent configuration
     config.DEVICE = "cpu"
     if torch.cuda.is_available():
