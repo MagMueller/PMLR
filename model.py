@@ -79,7 +79,7 @@ class LitModel(pl.LightningModule):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
-        loss = (loss * self.std).mean()
+        loss = (loss * self.std.squeeze()).mean()
         self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
@@ -97,7 +97,7 @@ class LitModel(pl.LightningModule):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target)
-        loss = (loss * self.std).mean()
+        loss = (loss * self.std.squeeze()).mean()
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
