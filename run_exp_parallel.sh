@@ -11,7 +11,18 @@ module load  cuda/11.8.0
 module load  eth_proxy
 module load gcc/9.3.0 python/3.11.2
 
+wandb_dir = $SCRATCH + "/wandb"
+wandb_cache_dir = $SCRATCH + "/.cache/wandb"
+wandb_config_dir = $SCRATCH + "/.config/wandb"
+# export
+export WANDB_DIR=$wandb_dir
+export WANDB_CACHE_DIR=$wandb_cache_dir
+export WANDB_CONFIG_DIR=$wandb_config_dir
+
+
 cd $HOME/PMLR
 source pmlr_env/bin/activate
+
+
 
 python main.py --nodes 1 --devices 2
