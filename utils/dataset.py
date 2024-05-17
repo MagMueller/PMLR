@@ -6,6 +6,7 @@ import numpy as np
 import torch
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils import grid
+from torch.utils.data import Dataset, ConcatDataset
 
 from utils.configs.config import HEIGHT, N_VAR, WIDTH
 
@@ -13,9 +14,13 @@ from utils.configs.config import HEIGHT, N_VAR, WIDTH
 class H5GeometricDataset(torch.utils.data.Dataset):
     # data size is [batch, n_var, x, y] x = 721, y = 1440 for ERA5 n_var = 21
     # we want a Graph with 721*1440 nodes and 21 features and each node is connected to its 8 neighbors
-    def __init__(self, path,  means=None, stds=None):
+    def __init__(self, path,  means=None, stds=None, Y1=0, Y2=721, X1=0, X2=1440):
         self.file_path = path
         self.dataset = None
+        self.Y1 = Y1
+        self.Y2 = Y2
+        self.X1 = X1
+        self.X2 = X2
 
         # check if file exists
         if not os.path.exists(self.file_path):
@@ -45,10 +50,18 @@ class H5GeometricDataset(torch.utils.data.Dataset):
             self.stds = stds.squeeze()
         # TODO to sparse
 
-    def __getitem__(self, index):
+    def set_indices(self, Y1, Y2, X1, X2):
+        self.Y1 = Y1
+        self.Y2 = Y2
+        self.X1 = X1
+        self.X2 = X2
+
+
+
+    def __getitem__(self, index, Y1=0, Y2=721, X1=0, X2=14440):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        x = self.dataset[index].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
+        x = self.dataset[index,:,self.Y1:self.Y2, self.X1:self.X2].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
         # np
         target = self.dataset[index + 1].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
 
@@ -77,3 +90,9 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         # edge_index = edge_index.to_sparse() # not implemented on mps for mac
         # edge_index = edge_index.coalesce()
         return edge_index
+
+
+class CustomConcatDataset(ConcatDataset):
+    def set_indices(self, Y1, Y2 ,X1, X2):
+        for dataset in self.datasets:
+            dataset.set_indices(Y1, Y2, X1, X2)
