@@ -49,8 +49,14 @@ SEQUENCE_LENGTH_VAL = 1  # this is our prediction horizon
 PREDICTION_LENGTH = 39  # this is our prediction horizon
 
 # Data Dimensions and Variables
-HEIGHT = 721
-WIDTH = 1440
+X1 = 0
+X2 = 10
+Y1 = 0
+Y2 = 10
+
+
+HEIGHT = Y2 - Y1  # 721
+WIDTH = X2 - X1  # 1440
 VARIABLES = [
     'u10', 'v10', 't2m', 'sp', 'msl', 't850', 'u1000', 'v1000', 'z1000',
     'u850', 'v850', 'z850', 'u500', 'v500', 'z500', 't500', 'z50', 'r500',
@@ -58,6 +64,7 @@ VARIABLES = [
 ]
 N_VAR = 20
 # print(f"Number of variables: {N_VAR}")
+
 
 MODEL_CONFIG = {
     "nfeat": N_VAR,

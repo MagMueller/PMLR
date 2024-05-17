@@ -36,8 +36,8 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         with h5py.File(self.file_path, 'r') as file:
             self.dataset_len = len(file["fields"])
 
-        self.height = HEIGHT
-        self.width = WIDTH
+        self.height = self.Y2 - self.Y1
+        self.width = self.X2 - self.X1
         self.features = N_VAR
 
         self.edge_index = self.create_edge_index(self.height, self.width)
@@ -50,20 +50,12 @@ class H5GeometricDataset(torch.utils.data.Dataset):
             self.stds = stds.squeeze()
         # TODO to sparse
 
-    def set_indices(self, Y1, Y2, X1, X2):
-        self.Y1 = Y1
-        self.Y2 = Y2
-        self.X1 = X1
-        self.X2 = X2
-
-
-
-    def __getitem__(self, index, Y1=0, Y2=721, X1=0, X2=14440):
+    def __getitem__(self, index):
         if self.dataset is None:
             self.dataset = h5py.File(self.file_path, 'r')["fields"]
-        x = self.dataset[index,:,self.Y1:self.Y2, self.X1:self.X2].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
+        x = self.dataset[index, :, self.Y1:self.Y2, self.X1:self.X2].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
         # np
-        target = self.dataset[index + 1].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
+        target = self.dataset[index + 1, :, self.Y1:self.Y2, self.X1:self.X2].transpose(1, 2, 0)[:, :, :-1].reshape(-1, self.features)
 
         # normalizing
         if self.means is not None and self.stds is not None:
@@ -83,6 +75,7 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         return self.dataset_len - 1
 
     def create_edge_index(self, height, width):
+
         # 721*1440*9 = 9344160 -> 9331198 edges (not at the border)
         (row, col), pos = grid(height=height, width=width)
         edge_index = torch.stack([row, col], dim=0)  # .to(torch.long).to(DEVICE)
@@ -93,6 +86,6 @@ class H5GeometricDataset(torch.utils.data.Dataset):
 
 
 class CustomConcatDataset(ConcatDataset):
-    def set_indices(self, Y1, Y2 ,X1, X2):
+    def set_indices(self, Y1, Y2, X1, X2):
         for dataset in self.datasets:
             dataset.set_indices(Y1, Y2, X1, X2)
