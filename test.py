@@ -8,6 +8,10 @@ def main(cfg: DictConfig):
 
     # print config model nclass
     print(cfg.model.nclass)
+    print(cfg.epochs)
+
+    # name of env
+    print(cfg.env.name)
 
 
 if __name__ == "__main__":

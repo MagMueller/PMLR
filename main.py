@@ -12,8 +12,7 @@ from torch import device, nn
 import torch
 import os
 from utils.dataset import H5GeometricDataset
-from utils.eval import evaluate
-from utils.configs.config import *
+
 import wandb
 from pytorch_lightning.loggers import WandbLogger
 import pytorch_lightning as pl
@@ -25,9 +24,12 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 
 from coRNN import coRNN, coRNN2
 from deep_GNN import deep_GNN
+import hydra
+from omegaconf import DictConfig, OmegaConf
 
 
-def main(args):
+@hydra.main(config_path="conf", config_name="config", version_base="1.5")
+def main(cfg: DictConfig):
 
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
@@ -37,9 +39,9 @@ def main(args):
         mode='min'
     )
     run_name = ""
-    if args.eval:
+    if cfg.eval:
         run_name = "eval_model"
-        if args.stupid:
+        if cfg.stupid:
             run_name = "eval_stupid"
         wandb_logger = WandbLogger(project='PMLR', name=run_name, log_model="all")
     else:
@@ -47,10 +49,10 @@ def main(args):
 
     trainer = Trainer(
         logger=wandb_logger,
-        max_epochs=EPOCHS,
-        strategy=STRATEGY,
-        num_nodes=args.nodes,
-        devices=args.devices,
+        max_epochs=cfg.epochs,
+        strategy=cfg.env.strategy,
+        num_nodes=cfg.env.nodes,
+        devices=cfg.env.devices,
         precision=32,
         # limit_train_batches=12,
         # limit_val_batches=12,
@@ -63,39 +65,37 @@ def main(args):
     print(f"Number of devices: {trainer.num_devices}")
 
     # for normalizing
-    TIME_MEANS = np.load(TIME_MEANS_PATH)[0, :N_VAR]
-    MEANS = np.load(GLOBAL_MEANS_PATH)[0, :N_VAR]
-    STDS = np.load(GLOBAL_STDS_PATH)[0, :N_VAR]
-    M = torch.as_tensor((TIME_MEANS - MEANS)/STDS)[:, 0:HEIGHT].unsqueeze(0)
-    STD = torch.tensor(STDS).unsqueeze(0)
+
+    # m = torch.as_tensor((time_means - means)/stds)[:, 0:cfg.height].unsqueeze(0)
+    # std = torch.tensor(stds).unsqueeze(0)
     datasets = {
-        "train": ConcatDataset([H5GeometricDataset(os.path.join(DATA_FILE_PATH, f"{year}.h5"), means=MEANS, stds=STDS) for year in YEARS]),
-        "val": H5GeometricDataset(VAL_FILE, means=MEANS, stds=STDS)
+        "train": ConcatDataset([H5GeometricDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+        "val": H5GeometricDataset(cfg.env.val_file, cfg=cfg)
     }
 
     # wandb_logger.watch(model, log='all', log_freq=100)
 
-    if MODEL_NAME == "coRNN":
-        model = coRNN(**MODEL_CONFIG)
-    elif MODEL_NAME == "deep_coRNN":
-        model = deep_GNN(**MODEL_CONFIG)
-    elif MODEL_NAME == "coRNN2":
-        model = coRNN2(**MODEL_CONFIG)
+    if cfg.model.name == "coRNN":
+        model = coRNN(**cfg.model)
+    elif cfg.model.name == "deep_coRNN":
+        model = deep_GNN(**cfg.model)
+    elif cfg.model.name == "coRNN2":
+        model = coRNN2(**cfg.model)
     else:
         raise ValueError("Model name not recognized")
 
-    if args.eval:
+    if cfg.eval:
         # use script download_artifact.py to download the model
         path = "artifacts/model-4yobs5ix:v9" + "/model.ckpt"
-        stupid = args.stupid
-        model = LitModel.load_from_checkpoint(checkpoint_path=path, datasets=datasets, std=STD, stupid=stupid, model=model)
+
+        model = LitModel.load_from_checkpoint(checkpoint_path=path, datasets=datasets,  model=model, config=cfg)
 
         print(f"autoregressive step is {model.count_autoreg_steps}")
         print(f"Model evaluation")
         trainer.test(model)
         return
     else:
-        model = LitModel(datasets=datasets, num_workers=args.devices, std=STD, model=model)
+        model = LitModel(datasets=datasets,  model=model, cfg=cfg)
 
         wandb_logger.watch(model, log='all', log_freq=100)
         trainer.fit(model)
@@ -103,13 +103,4 @@ def main(args):
 
 # %%
 if __name__ == "__main__":
-
-    import argparse
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--devices", type=int, default=1)
-    argparser.add_argument("--nodes", type=int, default=1)
-    argparser.add_argument("--eval", action="store_true")
-    argparser.add_argument("--stupid", action="store_true")
-    args = argparser.parse_args()
-
-    main(args)
+    main()

@@ -1,5 +1,4 @@
 from utils.metrics import weighted_rmse_channels, weighted_acc_channels
-from utils.configs.config import HEIGHT, WIDTH, N_VAR
 import torch
 import wandb
 
@@ -87,7 +86,7 @@ def evaluate(model, loader, device, subset=None, autoreg=True, log=True, predict
         import os
         # if exists append to the file with key "fourcastnet"
         out = {name: {
-            "rmse": rmse_per_pred_step.cpu().numpy().tolist(), 
+            "rmse": rmse_per_pred_step.cpu().numpy().tolist(),
             "acc": acc_per_pred_step.cpu().numpy().tolist(),
             "temps": predictions.cpu().numpy().tolist()
         }}

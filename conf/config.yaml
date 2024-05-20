@@ -12,7 +12,7 @@ batch_size_val: 1
 epochs: 20
 subset_train: null  # None to use all
 subset_val: null  # None to use all
-learning_rate: 0.001
+lr: 0.001
 sequence_length: 1  # 1 will also load target so 1 -> 2
 sequence_length_val: 1  # Prediction horizon
 prediction_length: 39  # Prediction horizon
@@ -46,4 +46,14 @@ variables:
   - 'r850'
   - 'tcwv'
 n_var: 20
+
+
+stupid: False
+eval: False
+
+
+global_means: "ccai_demo/additional/stats_v0/global_means.npy"
+global_stds: "ccai_demo/additional/stats_v0/global_stds.npy"
+time_means: "ccai_demo/additional/stats_v0/time_means.npy"
+land_sea_mask: "ccai_demo/additional/stats_v0/land_sea_mask.npy"
 

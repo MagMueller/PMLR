@@ -1,4 +1,3 @@
-from utils.configs.config import BATCH_SIZE, BATCH_SIZE_VAL, LEARNING_RATE, MODEL_CONFIG
 from utils.eval import weighted_rmse_channels
 from torch.optim import Adam
 import pytorch_lightning as pl
@@ -10,26 +9,27 @@ from torch.utils.data import DistributedSampler
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
 from deep_GNN import deep_GNN
+import numpy as np
 
 
 class LitModel(pl.LightningModule):
-    def __init__(self, datasets, std, model, config, num_workers=1, stupid=False):
+    def __init__(self, datasets, model, cfg):
         super().__init__()
-        self.batch_size = config['batch_size']
-        self.batch_size_val = config['batch_size_val']
-        self.n_var = config['n_var']
-        self.height = config['height']
-        self.width = config['width']
-        self.lr = config['lr']
+        self.batch_size = cfg.batch_size
+        self.batch_size_val = cfg.batch_size_val
+        self.n_var = cfg.n_var
+        self.height = cfg.height
+        self.width = cfg.width
+        self.lr = cfg.lr
 
         self.model = model
         self.criteria = weighted_rmse_channels
         self.datasets = datasets
-        self.num_cpus = num_workers
-        self.std = std
+        self.num_cpus = cfg.env.num_workers
+        self.stupid = cfg.stupid
+        self.std = torch.tensor(np.load(cfg.global_stds)[0, :cfg.n_var]).unsqueeze(0)
         self.last_prediction = None
         self.count_autoreg_steps = 0
-        self.stupid = stupid
 
     def forward(self, x, edge_index):
         # reshape?

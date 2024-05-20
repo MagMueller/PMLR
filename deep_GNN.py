@@ -30,7 +30,7 @@ class GraphCON(nn.Module):
 
 
 class deep_GNN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, nlayers, dt=1., epsilon=1., gamma=1., dropout=None):
+    def __init__(self, nfeat, nhid, nclass, nlayers, dt=1., epsilon=1., gamma=1., dropout=None, **kwargs):
         super(deep_GNN, self).__init__()
         self.enc = nn.Linear(nfeat, nhid)
         self.GNNs = nn.ModuleList()

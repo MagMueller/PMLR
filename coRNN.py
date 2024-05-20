@@ -7,7 +7,7 @@ from torch.cuda.amp import GradScaler, autocast
 
 
 class coRNNCell(nn.Module):
-    def __init__(self, n_inp, n_hid, dt, gamma, epsilon):
+    def __init__(self, n_inp, n_hid, dt, gamma, epsilon, **kwargs):
         super(coRNNCell, self).__init__()
         self.dt = dt
         self.gamma = gamma
@@ -25,7 +25,7 @@ class coRNNCell(nn.Module):
 
 
 class coRNN(nn.Module):
-    def __init__(self, n_inp, n_hid, n_out, dt, gamma, epsilon):
+    def __init__(self, n_inp, n_hid, n_out, dt, gamma, epsilon, **kwargs):
         super(coRNN, self).__init__()
         self.n_hid = n_hid
         self.cell = coRNNCell(n_inp, n_hid, dt, gamma, epsilon)
