@@ -1,6 +1,5 @@
 
 import torch
-from utils.configs.config import HEIGHT, WIDTH, N_VAR
 
 
 def lat(j: torch.Tensor, num_lat: int) -> torch.Tensor:
@@ -11,12 +10,12 @@ def latitude_weighting_factor(j: torch.Tensor, num_lat: int, s: torch.Tensor) ->
     return num_lat * torch.cos(3.1416/180. * lat(j, num_lat))/s
 
 
-def weighted_rmse_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+def weighted_rmse_channels(pred: torch.Tensor, target: torch.Tensor, n_var=20, height=721, width=1440) -> torch.Tensor:
     # takes in arrays of size [n, c, h, w]  and returns latitude-weighted rmse for each channel
     # TODO: check if this is correct - else reshape
     # reshape input [batch, h*w, c] -> [batch, c, h, w]
-    pred = pred.permute(0, 2, 1).reshape(-1, N_VAR, HEIGHT, WIDTH)
-    target = target.permute(0, 2, 1).reshape(-1, N_VAR, HEIGHT, WIDTH)
+    pred = pred.permute(0, 2, 1).reshape(-1, n_var, height, width)
+    target = target.permute(0, 2, 1).reshape(-1, n_var, height, width)
     num_lat = pred.shape[2]
     lat_t = torch.arange(start=0, end=num_lat, device=pred.device)
     s = torch.sum(torch.cos(3.1416/180. * lat(lat_t, num_lat)))
@@ -25,11 +24,11 @@ def weighted_rmse_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Te
     return result
 
 
-def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+def weighted_acc_channels(pred: torch.Tensor, target: torch.Tensor, n_var=20, height=721, width=1440) -> torch.Tensor:
     # takes in arrays of size [n, c, h, w]  and returns latitude-weighted acc for each channel
     # reshape input [batch, h*w, c] -> [batch, c, h, w]
-    pred = pred.permute(0, 2, 1).reshape(-1, N_VAR, HEIGHT, WIDTH)
-    target = target.permute(0, 2, 1).reshape(-1, N_VAR, HEIGHT, WIDTH)
+    pred = pred.permute(0, 2, 1).reshape(-1, n_var, height, width)
+    target = target.permute(0, 2, 1).reshape(-1, n_var, height, width)
 
     num_lat = pred.shape[2]
     lat_t = torch.arange(start=0, end=num_lat, device=pred.device)

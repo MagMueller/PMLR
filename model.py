@@ -9,60 +9,20 @@ from torch import nn
 from torch.utils.data import DistributedSampler
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
-
-
-class GraphCON(nn.Module):
-    def __init__(self, GNNs, dt=1., alpha=1., gamma=1., dropout=None):
-        super(GraphCON, self).__init__()
-        self.dt = dt
-        self.alpha = alpha
-        self.gamma = gamma
-        self.GNNs = GNNs  # list of the individual GNN layers
-        self.dropout = dropout
-
-    def forward(self, X0, Y0, edge_index):
-        # set initial values of ODEs
-
-        # solve ODEs using simple IMEX scheme
-        for gnn in self.GNNs:
-            Y0 = Y0 + self.dt * (torch.relu(gnn(X0, edge_index)) -
-                                 self.alpha * Y0 - self.gamma * X0)
-            X0 = X0 + self.dt * Y0
-
-            if (self.dropout is not None):
-                Y0 = F.dropout(Y0, self.dropout, training=self.training)
-                X0 = F.dropout(X0, self.dropout, training=self.training)
-
-        return X0, Y0
-
-
-class deep_GNN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, nlayers, dt=1., alpha=1., gamma=1., dropout=None):
-        super(deep_GNN, self).__init__()
-        self.enc = nn.Linear(nfeat, nhid)
-        self.GNNs = nn.ModuleList()
-        for _ in range(nlayers):
-            self.GNNs.append(GCNConv(nhid, nhid))
-        self.graphcon = GraphCON(self.GNNs, dt, alpha, gamma, dropout)
-        self.dec = nn.Linear(nhid, nclass)
-
-    def forward(self, x0, edge_index):
-        # compute initial values of ODEs (encode input)
-        x0 = self.enc(x0)
-        # stack GNNs using GraphCON
-        x0, _ = self.graphcon(x0, x0, edge_index)
-        # decode X state of GraphCON at final time for output nodes
-        x0 = self.dec(x0)
-        return x0
+from deep_GNN import deep_GNN
 
 
 class LitModel(pl.LightningModule):
-    def __init__(self, datasets, std, num_workers=1, stupid=False, model=None):
+    def __init__(self, datasets, std, model, config, num_workers=1, stupid=False):
         super().__init__()
-        if model is None:
-            self.model = deep_GNN(**MODEL_CONFIG)
-        else:
-            self.model = model
+        self.batch_size = config['batch_size']
+        self.batch_size_val = config['batch_size_val']
+        self.n_var = config['n_var']
+        self.height = config['height']
+        self.width = config['width']
+        self.lr = config['lr']
+
+        self.model = model
         self.criteria = weighted_rmse_channels
         self.datasets = datasets
         self.num_cpus = num_workers
@@ -80,7 +40,7 @@ class LitModel(pl.LightningModule):
     def training_step(self, batch, batch_idx=0):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
-        loss = self.criteria(predictions, target)
+        loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
         loss_scaled = (loss * self.std.squeeze()).mean()
         loss = (loss).mean()
         self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
@@ -100,7 +60,7 @@ class LitModel(pl.LightningModule):
         self.check_format(batch)
         x, edge_index, target = batch
         predictions = self(x, edge_index)
-        loss = self.criteria(predictions, target)
+        loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
         loss_scaled = (loss * self.std.squeeze()).mean()
         loss = (loss).mean()
         self.log('val_loss_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
@@ -124,7 +84,7 @@ class LitModel(pl.LightningModule):
         else:
             predictions = self(x, edge_index)
 
-        loss = self.criteria(predictions, target)
+        loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
         loss_scaled = (loss * self.std.squeeze()).mean()
         loss = (loss).mean()
         self.log('autoreg_rmse_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
@@ -135,7 +95,7 @@ class LitModel(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        optimizer = Adam(self.parameters(), lr=LEARNING_RATE)
+        optimizer = Adam(self.parameters(), lr=self.lr)
         return optimizer
 
     def on_epoch_end(self):
@@ -145,7 +105,7 @@ class LitModel(pl.LightningModule):
     def train_dataloader(self):
         loader = DataLoader(
             self.datasets['train'],
-            batch_size=BATCH_SIZE,
+            batch_size=self.batch_size,
             drop_last=True,
             shuffle=False,
             num_workers=self.num_cpus,
@@ -156,7 +116,7 @@ class LitModel(pl.LightningModule):
     def val_dataloader(self):
         loader = DataLoader(
             self.datasets['val'],
-            batch_size=BATCH_SIZE_VAL,
+            batch_size=self.batch_size_val,
             drop_last=True,
             shuffle=False,
             num_workers=self.num_cpus,
@@ -167,7 +127,7 @@ class LitModel(pl.LightningModule):
     def test_dataloader(self):
         loader = DataLoader(
             self.datasets['val'],
-            batch_size=BATCH_SIZE_VAL,
+            batch_size=self.batch_size_val,
             drop_last=True,
             shuffle=False,
             num_workers=0,

@@ -65,17 +65,39 @@ VARIABLES = [
 N_VAR = 20
 # print(f"Number of variables: {N_VAR}")
 
+MODEL_NAME = "deep_coRNN"  # "coRNN" or "coRNN2" or "deep_coRNN"
+if MODEL_NAME == "coRNN":
+    MODEL_CONFIG = {
+        "n_inp": N_VAR,
+        "n_hid": 64,
+        "n_out": N_VAR,
+        "dt": 1.,
+        "epsilon": 1.,
+        "gamma": 1.,
+    }
+elif MODEL_NAME == "coRNN2":
+    MODEL_CONFIG = {
+        "n_inp": N_VAR,
+        "n_hid": 64,
+        "n_out": N_VAR,
+        "dt": 1.,
+        "epsilon": 1.,
+        "gamma": 1.,
+    }
+elif MODEL_NAME == "deep_coRNN":
+    MODEL_CONFIG = {
+        "nfeat": N_VAR,
+        "nhid": 64,
+        "nclass": N_VAR,
+        "nlayers": 3,
+        "dt": 1.,
+        "alpha": 1.,
+        "gamma": 1.,
+        "dropout": 0.1
+    }
+else:
+    raise ValueError(f"Model name {MODEL_NAME} not recognized")
 
-MODEL_CONFIG = {
-    "nfeat": N_VAR,
-    "nhid": 64,
-    "nclass": N_VAR,
-    "nlayers": 3,
-    "dt": 1.,
-    "alpha": 1.,
-    "gamma": 1.,
-    "dropout": 0.1
-}
 
 if torch.cuda.is_available():
     DEVICE = "cuda"

@@ -83,9 +83,3 @@ class H5GeometricDataset(torch.utils.data.Dataset):
         # edge_index = edge_index.to_sparse() # not implemented on mps for mac
         # edge_index = edge_index.coalesce()
         return edge_index
-
-
-class CustomConcatDataset(ConcatDataset):
-    def set_indices(self, Y1, Y2, X1, X2):
-        for dataset in self.datasets:
-            dataset.set_indices(Y1, Y2, X1, X2)

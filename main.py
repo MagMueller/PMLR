@@ -13,7 +13,6 @@ import torch
 import os
 from utils.dataset import H5GeometricDataset
 from utils.eval import evaluate
-from utils.train import train_one_epoch
 from utils.configs.config import *
 import wandb
 from pytorch_lightning.loggers import WandbLogger
@@ -23,6 +22,9 @@ from model import LitModel
 import numpy as np
 from torch.utils.data import ConcatDataset
 from pytorch_lightning.callbacks import ModelCheckpoint
+
+from coRNN import coRNN, coRNN2
+from deep_GNN import deep_GNN
 
 
 def main(args):
@@ -73,11 +75,19 @@ def main(args):
 
     # wandb_logger.watch(model, log='all', log_freq=100)
 
+    if MODEL_NAME == "coRNN":
+        model = coRNN(**MODEL_CONFIG)
+    elif MODEL_NAME == "deep_coRNN":
+        model = deep_GNN(**MODEL_CONFIG)
+    elif MODEL_NAME == "coRNN2":
+        model = coRNN2(**MODEL_CONFIG)
+    else:
+        raise ValueError("Model name not recognized")
+
     if args.eval:
         # use script download_artifact.py to download the model
         path = "artifacts/model-4yobs5ix:v9" + "/model.ckpt"
         stupid = args.stupid
-        model = deep_GNN(**MODEL_CONFIG)
         model = LitModel.load_from_checkpoint(checkpoint_path=path, datasets=datasets, std=STD, stupid=stupid, model=model)
 
         print(f"autoregressive step is {model.count_autoreg_steps}")
@@ -85,7 +95,7 @@ def main(args):
         trainer.test(model)
         return
     else:
-        model = LitModel(datasets=datasets, num_workers=args.devices, std=STD)
+        model = LitModel(datasets=datasets, num_workers=args.devices, std=STD, model=model)
 
         wandb_logger.watch(model, log='all', log_freq=100)
         trainer.fit(model)
