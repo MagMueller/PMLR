@@ -1,0 +1,49 @@
+
+defaults:
+  - _self_
+  - env: local  # Default environment
+  - model: deep_coRNN  # Default model
+
+# General settings (shared across environments)
+output_path: "output"
+output_file: 'inference_results.json'
+batch_size: 1
+batch_size_val: 1
+epochs: 20
+subset_train: null  # None to use all
+subset_val: null  # None to use all
+learning_rate: 0.001
+sequence_length: 1  # 1 will also load target so 1 -> 2
+sequence_length_val: 1  # Prediction horizon
+prediction_length: 39  # Prediction horizon
+
+# Dimensions and variables
+# x1: 0
+# x2: 10 # 1440
+# y1: 0
+# y2: 10 # 721
+height: 721
+width: 1440
+variables:
+  - 'u10'
+  - 'v10'
+  - 't2m'
+  - 'sp'
+  - 'msl'
+  - 't850'
+  - 'u1000'
+  - 'v1000'
+  - 'z1000'
+  - 'u850'
+  - 'v850'
+  - 'z850'
+  - 'u500'
+  - 'v500'
+  - 'z500'
+  - 't500'
+  - 'z50'
+  - 'r500'
+  - 'r850'
+  - 'tcwv'
+n_var: 20
+

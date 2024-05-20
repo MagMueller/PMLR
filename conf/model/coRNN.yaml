@@ -1,0 +1,7 @@
+name: coRNN
+n_inp: ${n_var}
+n_hid: 64
+n_out: ${n_var}
+dt: 1.0
+epsilon: 1.0
+gamma: 1.0

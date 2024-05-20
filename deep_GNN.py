@@ -5,10 +5,10 @@ from torch_geometric.nn import GCNConv
 
 
 class GraphCON(nn.Module):
-    def __init__(self, GNNs, dt=1., alpha=1., gamma=1., dropout=None):
+    def __init__(self, GNNs, dt=1., epsilon=1., gamma=1., dropout=None):
         super(GraphCON, self).__init__()
         self.dt = dt
-        self.alpha = alpha
+        self.epsilon = epsilon
         self.gamma = gamma
         self.GNNs = GNNs  # list of the individual GNN layers
         self.dropout = dropout
@@ -19,7 +19,7 @@ class GraphCON(nn.Module):
         # solve ODEs using simple IMEX scheme
         for gnn in self.GNNs:
             Y0 = Y0 + self.dt * (torch.relu(gnn(X0, edge_index)) -
-                                 self.alpha * Y0 - self.gamma * X0)
+                                 self.epsilon * Y0 - self.gamma * X0)
             X0 = X0 + self.dt * Y0
 
             if (self.dropout is not None):
@@ -30,13 +30,13 @@ class GraphCON(nn.Module):
 
 
 class deep_GNN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, nlayers, dt=1., alpha=1., gamma=1., dropout=None):
+    def __init__(self, nfeat, nhid, nclass, nlayers, dt=1., epsilon=1., gamma=1., dropout=None):
         super(deep_GNN, self).__init__()
         self.enc = nn.Linear(nfeat, nhid)
         self.GNNs = nn.ModuleList()
         for _ in range(nlayers):
             self.GNNs.append(GCNConv(nhid, nhid))
-        self.graphcon = GraphCON(self.GNNs, dt, alpha, gamma, dropout)
+        self.graphcon = GraphCON(self.GNNs, dt, epsilon, gamma, dropout)
         self.dec = nn.Linear(nhid, nclass)
 
     def forward(self, x0, edge_index):

@@ -171,3 +171,4 @@ lightning_logs/
 # you can find them in wandb
 checkpoints/ 
 log/
+outputs
