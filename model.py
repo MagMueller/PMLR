@@ -1,3 +1,4 @@
+import einops
 from utils.eval import weighted_rmse_channels
 from torch.optim import Adam
 import pytorch_lightning as pl
@@ -47,7 +48,6 @@ class LitModel(pl.LightningModule):
             self.std = self.std.to(batch[0].device)
 
     def training_step(self, batch, batch_idx=0):
-        # TODO make for sequence prediction and combine gnn and image data here
         if len(batch.shape) == 5:
             loss, loss_scaled = self.step_image(batch)
         elif len(batch) == 3:
@@ -71,17 +71,20 @@ class LitModel(pl.LightningModule):
         # batch has shape (B, Seq_len, n_var, H, W)
         # loop over sequence and predict always next, calculate loss over all
 
-        seq_len = batch.size(1)
         total_loss = 0
         total_loss_scaled = 0
-        for i in range(seq_len - 1):
-            x, target = batch[:, i, :, :, :], batch[:, i + 1, :, :, :]
-            predictions = self(x)
-            loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
-            loss_scaled = (loss * self.std.squeeze()).mean()
-            loss = (loss).mean()
-            total_loss += loss
-            total_loss_scaled += loss_scaled
+        # last target is the target for the next step
+        batch = einops.rearrange(batch, 'b t c h w -> t b c h w')
+
+        target = batch[-1]
+        x = batch[:-1]
+        # swithch batch and seq_len
+        predictions = self(x)
+        loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
+        loss_scaled = (loss * self.std.squeeze()).mean()
+        loss = (loss).mean()
+        total_loss += loss
+        total_loss_scaled += loss_scaled
 
         return total_loss, total_loss_scaled
 
@@ -95,7 +98,7 @@ class LitModel(pl.LightningModule):
         else:
             raise ValueError(f"Invalid batch shape {batch.shape}")
 
-        self.log('val_loss_scaled', total_loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_loss_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 

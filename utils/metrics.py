@@ -14,8 +14,10 @@ def weighted_rmse_channels(pred: torch.Tensor, target: torch.Tensor, n_var=20, h
     # takes in arrays of size [n, c, h, w]  and returns latitude-weighted rmse for each channel
     # TODO: check if this is correct - else reshape
     # reshape input [batch, h*w, c] -> [batch, c, h, w]
-    pred = pred.permute(0, 2, 1).reshape(-1, n_var, height, width)
-    target = target.permute(0, 2, 1).reshape(-1, n_var, height, width)
+    if pred.shape[1] != n_var:
+        pred = pred.permute(0, 2, 1).reshape(-1, n_var, height, width)
+        target = target.permute(0, 2, 1).reshape(-1, n_var, height, width)
+
     num_lat = pred.shape[2]
     lat_t = torch.arange(start=0, end=num_lat, device=pred.device)
     s = torch.sum(torch.cos(3.1416/180. * lat(lat_t, num_lat)))

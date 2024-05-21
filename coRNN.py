@@ -2,7 +2,7 @@ from torch import nn
 import torch
 from tqdm import tqdm
 from torch.cuda.amp import GradScaler, autocast
-
+import einops
 # # this modified for 2D images as input
 
 
@@ -60,20 +60,26 @@ class coRNNCell2(nn.Module):
 
 
 class coRNN2(nn.Module):
-    def __init__(self, n_inp, n_hid, n_out, dt, gamma, epsilon, **kwargs):
+    def __init__(self, n_inp, n_hid, n_out, dt, gamma, epsilon, seq_len, n_roll, **kwargs):
         super(coRNN2, self).__init__()
         self.n_hid = n_hid
-        self.readin = nn.Conv2d(3*n_inp, 2*n_hid, 3, stride=1, padding=1, dilation=1,
+        self.n_roll = n_roll
+        self.readin = nn.Conv2d(seq_len*n_inp, 2*n_hid, 3, stride=1, padding=1, dilation=1,
                                 padding_mode="replicate")
         self.cell = coRNNCell2(n_hid, dt, gamma, epsilon)
         self.readout = nn.Conv2d(n_hid, n_out, 1)
 
     def forward(self, x):  # (T,B,C,H,W)
         # initialize hidden states
-        x = x.transpose(0, 1).reshape(x.shape[1], x.shape[0]*x.shape[2], x.shape[3], x.shape[4])  # (B,TC,H,W)
-        h = self.readin(x)  # (B,2C,H,W)
+        print(x.shape)
+        x = einops.rearrange(x, 't b c h w -> b (t c) h w')  # (B,TC,H,W)
+        # x = x.transpose(0, 1).reshape(x.shape[1], x.shape[0]*x.shape[2], x.shape[3], x.shape[4])  # (B,TC,H,W)
+        print(f"shape after reshape: {x.shape}")
+        h = self.readin(x)  # (B,seq_len*C,H,W)
+        print(f"shape after readin: {h.shape}")
         hy, hz = h[:, :self.n_hid], h[:, self.n_hid:]
-        for t in range(3):
+        print(f"shape after readin hy: {hy.shape} hz: {hz.shape}")
+        for t in range(self.n_roll):
             hy, hz = self.cell(hy, hz)  # (B,C,H,W)
         output = self.readout(hy)
         return output  # (B,C',H,W)
