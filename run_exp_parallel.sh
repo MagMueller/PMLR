@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --nodes=1            # This needs to match Trainer(num_nodes=...)
-#SBATCH --gpus=2
-#SBATCH --ntasks-per-node=2   # This needs to match Trainer(devices=...)
+#SBATCH --gpus=1
+#SBATCH --ntasks-per-node=1   # This needs to match Trainer(devices=...)
 #SBATCH --time=0-23:59:00
 #SBATCH --job-name=corrn_job_long   # Job name
-#SBATCH --output=log/corrn_job_long_%j.out  # Standard output and error log
-#SBATCH --error=log/corrn_job_long_%j.err  # Standard output and error log
+#SBATCH --output=log/corrn_job_long_64%j.out  # Standard output and error log
+#SBATCH --error=log/corrn_job_long_64%j.err  # Standard output and error log
 #SBATCH --mem-per-cpu=8G 
 module load  cuda/11.8.0 
 module load  eth_proxy
@@ -24,5 +24,6 @@ cd $HOME/PMLR
 source pmlr_env/bin/activate
 
 
+# read from command line
+python main.py env=cluster model=$1 # deep_coRNN # coRNN coRNN2
 
-python main.py --nodes 1 --devices 2

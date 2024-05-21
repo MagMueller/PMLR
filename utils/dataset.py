@@ -76,8 +76,6 @@ class H5ImageDataset(torch.utils.data.Dataset):
         if not os.path.exists(self.file_path):
             print(f"File {self.file_path} does not exist you can download it with the following commands: \n wget https://portal.nersc.gov/project/m4134/ccai_demo.tar \n tar -xvf ccai_demo.tar \n rm ccai_demo.tar\n")
             # # approx 800 Mio values -> 3.2 GB
-        cwd = os.getcwd()
-        print(cwd)
         with h5py.File(self.file_path, 'r') as file:
             self.dataset_len = len(file["fields"])
 

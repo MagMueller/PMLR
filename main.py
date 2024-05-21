@@ -45,13 +45,12 @@ def main(cfg: DictConfig):
         run_name = "eval_model"
         if cfg.stupid:
             run_name = "eval_stupid"
-        wandb_logger = WandbLogger(project='PMLR', name=run_name, log_model="all")
     else:
         unique_id = uuid.uuid4()
         run_name = cfg.model.name + "_hid:" + str(cfg.model.n_hid) + "_epoch:" + str(cfg.epochs) + "_" + str(unique_id)
-        wandb_logger = WandbLogger(project='PMLR', log_model="all")
 
     config = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
+    wandb_logger = WandbLogger(project='PMLR', log_model="all", name=run_name, config=config)
     # wandb_logger.experiment.config.update(config)
 
     trainer = Trainer(
