@@ -28,7 +28,7 @@ class LitModel(pl.LightningModule):
         self.datasets = datasets
         self.num_cpus = cfg.env.num_workers
         self.stupid = cfg.stupid
-        self.std = torch.tensor(np.load(cfg.global_stds)[0, :cfg.n_var]).unsqueeze(0)
+        self.std = torch.tensor(np.load(cfg.env.global_stds)[0, :cfg.n_var]).unsqueeze(0)
         self.last_prediction = None
         self.count_autoreg_steps = 0
         self.model_name = self.model.__class__.__name__

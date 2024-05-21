@@ -30,14 +30,14 @@ class GraphCON(nn.Module):
 
 
 class deep_GNN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, nlayers, dt=1., epsilon=1., gamma=1., dropout=None, **kwargs):
+    def __init__(self, nfeat, n_hid, nclass, nlayers, dt=1., epsilon=1., gamma=1., dropout=None, **kwargs):
         super(deep_GNN, self).__init__()
-        self.enc = nn.Linear(nfeat, nhid)
+        self.enc = nn.Linear(nfeat, n_hid)
         self.GNNs = nn.ModuleList()
         for _ in range(nlayers):
-            self.GNNs.append(GCNConv(nhid, nhid))
+            self.GNNs.append(GCNConv(n_hid, n_hid))
         self.graphcon = GraphCON(self.GNNs, dt, epsilon, gamma, dropout)
-        self.dec = nn.Linear(nhid, nclass)
+        self.dec = nn.Linear(n_hid, nclass)
 
     def forward(self, x0, edge_index):
 

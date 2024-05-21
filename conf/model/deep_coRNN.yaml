@@ -1,6 +1,6 @@
 name: deep_coRNN
 nfeat: ${n_var}
-nhid: 64
+n_hid: 64
 nclass: ${n_var}
 nlayers: 3
 dt: 1.0

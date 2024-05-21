@@ -4,7 +4,8 @@ defaults:
   - env: local  # Default environment
   - model: coRNN2  # Default model # coRNN2 deep_coRNN
 
-# General settings (shared across environments)
+data_path_cluster: "/cluster/scratch/mmagnus/data"
+data_path_local: "${hydra:runtime.cwd}/"
 output_path: "output"
 output_file: 'inference_results.json'
 batch_size: 1
@@ -50,11 +51,6 @@ n_var: 20
 stupid: False
 eval: False
 
-
-global_means: "ccai_demo/additional/stats_v0/global_means.npy"
-global_stds: "ccai_demo/additional/stats_v0/global_stds.npy"
-time_means: "ccai_demo/additional/stats_v0/time_means.npy"
-land_sea_mask: "ccai_demo/additional/stats_v0/land_sea_mask.npy"
 
 
 wandb:

@@ -6,13 +6,16 @@ import omegaconf
 import random
 
 
-@hydra.main(config_path="conf", config_name="config", version_base="1.5")
+@hydra.main(config_path="conf", config_name="config", version_base="1.1")
 def main(cfg: DictConfig):
-    print(OmegaConf.to_yaml(cfg))
+    # print(OmegaConf.to_yaml(cfg))
     print(cfg.model.n_hid)
     print(cfg.epochs)
+    print(f"cfg.env.train_folder: {cfg.env.train_folder}")
+
     # log config
     unique_id = uuid.uuid4()
+
     name = cfg.model.name + "_hid:" + str(cfg.model.n_hid) + "_epoch:" + str(cfg.epochs) + "_" + str(unique_id)
 
     config = omegaconf.OmegaConf.to_container(

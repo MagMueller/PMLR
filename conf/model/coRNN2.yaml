@@ -7,3 +7,4 @@ epsilon: 1.0
 gamma: 1.0
 n_roll: 4
 seq_len: ${sequence_length}
+kernel_size: 3

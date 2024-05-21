@@ -26,10 +26,12 @@ from coRNN import coRNN, coRNN2
 from deep_GNN import deep_GNN
 import hydra
 from omegaconf import DictConfig, OmegaConf
+import uuid
 
 
-@hydra.main(config_path="conf", config_name="config", version_base="1.5")
+@hydra.main(config_path="conf", config_name="config", version_base="1.1")
 def main(cfg: DictConfig):
+    print(OmegaConf.to_yaml(cfg))
 
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
@@ -45,7 +47,12 @@ def main(cfg: DictConfig):
             run_name = "eval_stupid"
         wandb_logger = WandbLogger(project='PMLR', name=run_name, log_model="all")
     else:
+        unique_id = uuid.uuid4()
+        run_name = cfg.model.name + "_hid:" + str(cfg.model.n_hid) + "_epoch:" + str(cfg.epochs) + "_" + str(unique_id)
         wandb_logger = WandbLogger(project='PMLR', log_model="all")
+
+    config = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
+    # wandb_logger.experiment.config.update(config)
 
     trainer = Trainer(
         logger=wandb_logger,
@@ -74,19 +81,19 @@ def main(cfg: DictConfig):
     if cfg.model.name == "coRNN":
         model = coRNN(**cfg.model)
         datasets = {
-            "train": ConcatDataset([H5ImageDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+            "train": ConcatDataset([H5ImageDataset(os.path.join(cfg.env.train_folder, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
             "val": H5ImageDataset(cfg.env.val_file, cfg=cfg)
         }
     elif cfg.model.name == "coRNN2":
         model = coRNN2(**cfg.model)
         datasets = {
-            "train": ConcatDataset([H5ImageDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+            "train": ConcatDataset([H5ImageDataset(os.path.join(cfg.env.train_folder, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
             "val": H5ImageDataset(cfg.env.val_file, cfg=cfg)
         }
     elif cfg.model.name == "deep_coRNN":
         model = deep_GNN(**cfg.model)
         datasets = {
-            "train": ConcatDataset([H5GraphDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+            "train": ConcatDataset([H5GraphDataset(os.path.join(cfg.env.train_folder, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
             "val": H5GraphDataset(cfg.env.val_file, cfg=cfg)
         }
     else:

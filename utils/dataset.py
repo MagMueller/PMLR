@@ -31,8 +31,8 @@ class H5GraphDataset(torch.utils.data.Dataset):
         self.edge_index = self.create_edge_index(self.height, self.width)
 
         # load means and stds
-        self.means = np.load(cfg.global_means)[0, :cfg.n_var].squeeze()
-        self.stds = np.load(cfg.global_stds)[0, :cfg.n_var].squeeze()
+        self.means = np.load(cfg.env.global_means)[0, :cfg.n_var].squeeze()
+        self.stds = np.load(cfg.env.global_stds)[0, :cfg.n_var].squeeze()
         # TODO to sparse
 
     def __getitem__(self, index):
@@ -76,7 +76,8 @@ class H5ImageDataset(torch.utils.data.Dataset):
         if not os.path.exists(self.file_path):
             print(f"File {self.file_path} does not exist you can download it with the following commands: \n wget https://portal.nersc.gov/project/m4134/ccai_demo.tar \n tar -xvf ccai_demo.tar \n rm ccai_demo.tar\n")
             # # approx 800 Mio values -> 3.2 GB
-
+        cwd = os.getcwd()
+        print(cwd)
         with h5py.File(self.file_path, 'r') as file:
             self.dataset_len = len(file["fields"])
 
@@ -85,8 +86,8 @@ class H5ImageDataset(torch.utils.data.Dataset):
         self.features = cfg.n_var
 
         # load means and stds
-        self.means = np.load(cfg.global_means)[0, :cfg.n_var].squeeze().reshape(1, -1, 1, 1)
-        self.stds = np.load(cfg.global_stds)[0, :cfg.n_var].squeeze().reshape(1, -1, 1, 1)
+        self.means = np.load(cfg.env.global_means)[0, :cfg.n_var].squeeze().reshape(1, -1, 1, 1)
+        self.stds = np.load(cfg.env.global_stds)[0, :cfg.n_var].squeeze().reshape(1, -1, 1, 1)
         self.seq_len = cfg.sequence_length
 
     def __len__(self):
