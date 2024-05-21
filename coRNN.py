@@ -74,11 +74,8 @@ class coRNN2(nn.Module):
         print(x.shape)
         x = einops.rearrange(x, 't b c h w -> b (t c) h w')  # (B,TC,H,W)
         # x = x.transpose(0, 1).reshape(x.shape[1], x.shape[0]*x.shape[2], x.shape[3], x.shape[4])  # (B,TC,H,W)
-        print(f"shape after reshape: {x.shape}")
         h = self.readin(x)  # (B,seq_len*C,H,W)
-        print(f"shape after readin: {h.shape}")
         hy, hz = h[:, :self.n_hid], h[:, self.n_hid:]
-        print(f"shape after readin hy: {hy.shape} hz: {hz.shape}")
         for t in range(self.n_roll):
             hy, hz = self.cell(hy, hz)  # (B,C,H,W)
         output = self.readout(hy)

@@ -31,6 +31,7 @@ class LitModel(pl.LightningModule):
         self.std = torch.tensor(np.load(cfg.global_stds)[0, :cfg.n_var]).unsqueeze(0)
         self.last_prediction = None
         self.count_autoreg_steps = 0
+        self.model_name = self.model.__class__.__name__
 
     def forward(self, x, edge_index=None):
         if edge_index is None:
@@ -48,12 +49,13 @@ class LitModel(pl.LightningModule):
             self.std = self.std.to(batch[0].device)
 
     def training_step(self, batch, batch_idx=0):
-        if len(batch.shape) == 5:
-            loss, loss_scaled = self.step_image(batch)
-        elif len(batch) == 3:
+
+        if self.model_name == "deep_GNN":
             loss, loss_scaled = self.step_gnn(batch)
+        elif self.model_name == "coRNN" or self.model_name == "coRNN2":
+            loss, loss_scaled = self.step_image(batch)
         else:
-            raise ValueError(f"Invalid batch shape {batch.shape}")
+            raise ValueError(f"Model {self.model_name} not implemented")
 
         self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log(name='train_loss_scaled', value=loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
@@ -61,6 +63,7 @@ class LitModel(pl.LightningModule):
 
     def step_gnn(self, batch):
         x, edge_index, target = batch
+        edge_index = edge_index[0]
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
         loss_scaled = (loss * self.std.squeeze()).mean()
@@ -91,12 +94,12 @@ class LitModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         self.convert_std(batch)
 
-        if len(batch.shape) == 5:
-            loss, loss_scaled = self.step_image(batch)
-        elif len(batch) == 3:
+        if self.model_name == "deep_GNN":
             loss, loss_scaled = self.step_gnn(batch)
+        elif self.model_name == "coRNN" or self.model_name == "coRNN2":
+            loss, loss_scaled = self.step_image(batch)
         else:
-            raise ValueError(f"Invalid batch shape {batch.shape}")
+            raise ValueError(f"Model {self.model_name} not implemented")
 
         self.log('val_loss_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
