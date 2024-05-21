@@ -1,0 +1,79 @@
+data_path_cluster: /cluster/scratch/mmagnus/data
+data_path_local: ${hydra:runtime.cwd}/
+output_path: output
+output_file: inference_results.json
+batch_size: 1
+batch_size_val: 1
+epochs: 20
+subset_train: null
+subset_val: null
+lr: 0.001
+sequence_length: 3
+prediction_length: 39
+height: 721
+width: 1440
+variables:
+- u10
+- v10
+- t2m
+- sp
+- msl
+- t850
+- u1000
+- v1000
+- z1000
+- u850
+- v850
+- z850
+- u500
+- v500
+- z500
+- t500
+- z50
+- r500
+- r850
+- tcwv
+n_var: 20
+stupid: false
+eval: false
+wandb:
+  project: PMLR
+  config:
+  - model
+  - env
+env:
+  train_folder: ${data_path_cluster}
+  years:
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  val_file: ${data_path_cluster}/2018.h5
+  strategy: ddp
+  nodes: 1
+  devices: 1
+  num_workers: 1
+  global_means: ${data_path_cluster}/ccai_demo/additional/stats_v0/global_means.npy
+  global_stds: ${data_path_cluster}/ccai_demo/additional/stats_v0/global_stds.npy
+  time_means: ${data_path_cluster}/ccai_demo/additional/stats_v0/time_means.npy
+  land_sea_mask: ${data_path_cluster}/ccai_demo/additional/stats_v0/land_sea_mask.npy
+model:
+  name: deep_coRNN
+  nfeat: ${n_var}
+  n_hid: 64
+  nclass: ${n_var}
+  nlayers: 3
+  dt: 1.0
+  epsilon: 1.0
+  gamma: 1.0
+  dropout: 0.1
+
+Number of devices: 1
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]Updating std to dtype
+Updating std to device
+Sanity Checking DataLoader 0:  50%|█████     | 1/2 [00:05<00:05,  0.20it/s]Sanity Checking DataLoader 0: 100%|██████████| 2/2 [00:05<00:00,  0.37it/s]                                                                           Training: |          | 0/? [00:00<?, ?it/s]Training:   0%|          | 0/13131 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/13131 [00:00<?, ?it/s] Epoch 0:   0%|          | 1/13131 [00:02<10:02:45,  0.36it/s]Epoch 0:   0%|          | 1/13131 [00:02<10:26:34,  0.35it/s, v_num=mn9j, train_loss_step=1.110, train_loss_scaled_step=919.0]Epoch 0:   0%|          | 2/13131 [00:04<7:27:15,  0.49it/s, v_num=mn9j, train_loss_step=1.110, train_loss_scaled_step=919.0] Epoch 0:   0%|          | 2/13131 [00:04<7:46:13,  0.47it/s, v_num=mn9j, train_loss_step=1.140, train_loss_scaled_step=975.0]Epoch 0:   0%|          | 3/13131 [00:05<6:48:02,  0.54it/s, v_num=mn9j, train_loss_step=1.140, train_loss_scaled_step=975.0]Epoch 0:   0%|          | 3/13131 [00:05<7:01:00,  0.52it/s, v_num=mn9j, train_loss_step=1.120, train_loss_scaled_step=932.0]Epoch 0:   0%|          | 4/13131 [00:07<6:59:57,  0.52it/s, v_num=mn9j, train_loss_step=1.120, train_loss_scaled_step=932.0]Epoch 0:   0%|          | 4/13131 [00:07<7:00:09,  0.52it/s, v_num=mn9j, train_loss_step=1.130, train_loss_scaled_step=954.0]Epoch 0:   0%|          | 5/13131 [00:09<6:34:19,  0.55it/s, v_num=mn9j, train_loss_step=1.130, train_loss_scaled_step=954.0]Epoch 0:   0%|          | 5/13131 [00:09<6:42:01,  0.54it/s, v_num=mn9j, train_loss_step=1.090, train_loss_scaled_step=905.0]Epoch 0:   0%|          | 6/13131 [00:10<6:30:44,  0.56it/s, v_num=mn9j, train_loss_step=1.090, train_loss_scaled_step=905.0]Epoch 0:   0%|          | 6/13131 [00:10<6:37:13,  0.55it/s, v_num=mn9j, train_loss_step=1.160, train_loss_scaled_step=1.08e+3]Epoch 0:   0%|          | 7/13131 [00:12<6:24:52,  0.57it/s, v_num=mn9j, train_loss_step=1.160, train_loss_scaled_step=1.08e+3]Epoch 0:   0%|          | 7/13131 [00:12<6:30:22,  0.56it/s, v_num=mn9j, train_loss_step=1.150, train_loss_scaled_step=1.1e+3] Epoch 0:   0%|          | 8/13131 [00:13<6:17:53,  0.58it/s, v_num=mn9j, train_loss_step=1.150, train_loss_scaled_step=1.1e+3]Epoch 0:   0%|          | 8/13131 [00:13<6:22:40,  0.57it/s, v_num=mn9j, train_loss_step=1.150, train_loss_scaled_step=1.06e+3]Epoch 0:   0%|          | 9/13131 [00:15<6:24:35,  0.57it/s, v_num=mn9j, train_loss_step=1.150, train_loss_scaled_step=1.06e+3]Epoch 0:   0%|          | 9/13131 [00:16<6:29:04,  0.56it/s, v_num=mn9j, train_loss_step=1.120, train_loss_scaled_step=1.04e+3]Epoch 0:   0%|          | 10/13131 [00:17<6:21:04,  0.57it/s, v_num=mn9j, train_loss_step=1.120, train_loss_scaled_step=1.04e+3]Epoch 0:   0%|          | 10/13131 [00:17<6:24:57,  0.57it/s, v_num=mn9j, train_loss_step=1.070, train_loss_scaled_step=897.0]  Epoch 0:   0%|          | 11/13131 [00:18<6:17:06,  0.58it/s, v_num=mn9j, train_loss_step=1.070, train_loss_scaled_step=897.0]Epoch 0:   0%|          | 11/13131 [00:19<6:20:38,  0.57it/s, v_num=mn9j, train_loss_step=1.050, train_loss_scaled_step=893.0]Epoch 0:   0%|          | 12/13131 [00:20<6:14:32,  0.58it/s, v_num=mn9j, train_loss_step=1.050, train_loss_scaled_step=893.0]Epoch 0:   0%|          | 12/13131 [00:20<6:17:38,  0.58it/s, v_num=mn9j, train_loss_step=1.060, train_loss_scaled_step=898.0]Epoch 0:   0%|          | 13/13131 [00:22<6:15:55,  0.58it/s, v_num=mn9j, train_loss_step=1.060, train_loss_scaled_step=898.0]Epoch 0:   0%|          | 13/13131 [00:22<6:18:54,  0.58it/s, v_num=mn9j, train_loss_step=1.080, train_loss_scaled_step=953.0]Epoch 0:   0%|          | 14/13131 [00:23<6:12:00,  0.59it/s, v_num=mn9j, train_loss_step=1.080, train_loss_scaled_step=953.0]Epoch 0:   0%|          | 14/13131 [00:24<6:14:47,  0.58it/s, v_num=mn9j, train_loss_step=1.060, train_loss_scaled_step=865.0]Epoch 0:   0%|          | 15/13131 [00:25<6:08:55,  0.59it/s, v_num=mn9j, train_loss_step=1.060, train_loss_scaled_step=865.0]Epoch 0:   0%|          | 15/13131 [00:25<6:11:30,  0.59it/s, v_num=mn9j, train_loss_step=1.110, train_loss_scaled_step=1.01e+3]Epoch 0:   0%|          | 16/13131 [00:26<6:06:18,  0.60it/s, v_num=mn9j, train_loss_step=1.110, train_loss_scaled_step=1.01e+3]Epoch 0:   0%|          | 16/13131 [00:26<6:08:42,  0.59it/s, v_num=mn9j, train_loss_step=1.050, train_loss_scaled_step=856.0]  Epoch 0:   0%|          | 17/13131 [00:28<6:03:57,  0.60it/s, v_num=mn9j, train_loss_step=1.050, train_loss_scaled_step=856.0]Epoch 0:   0%|          | 17/13131 [00:28<6:06:14,  0.60it/s, v_num=mn9j, train_loss_step=1.030, train_loss_scaled_step=846.0]Epoch 0:   0%|          | 18/13131 [00:30<6:04:17,  0.60it/s, v_num=mn9j, train_loss_step=1.030, train_loss_scaled_step=846.0]Epoch 0:   0%|          | 18/13131 [00:30<6:06:27,  0.60it/s, v_num=mn9j, train_loss_step=1.050, train_loss_scaled_step=848.0]Epoch 0:   0%|          | 19/13131 [00:31<6:04:43,  0.60it/s, v_num=mn9j, train_loss_step=1.050, train_loss_scaled_step=848.0]Epoch 0:   0%|          | 19/13131 [00:31<6:06:46,  0.60it/s, v_num=mn9j, train_loss_step=0.998, train_loss_scaled_step=799.0]Epoch 0:   0%|          | 20/13131 [00:33<6:05:12,  0.60it/s, v_num=mn9j, train_loss_step=0.998, train_loss_scaled_step=799.0]Epoch 0:   0%|          | 20/13131 [00:33<6:07:08,  0.60it/s, v_num=mn9j, train_loss_step=1.070, train_loss_scaled_step=855.0]Epoch 0:   0%|          | 21/13131 [00:34<6:03:06,  0.60it/s, v_num=mn9j, train_loss_step=1.070, train_loss_scaled_step=855.0]Epoch 0:   0%|          | 21/13131 [00:35<6:04:57,  0.60it/s, v_num=mn9j, train_loss_step=1.020, train_loss_scaled_step=851.0]Epoch 0:   0%|          | 22/13131 [00:36<6:03:47,  0.60it/s, v_num=mn9j, train_loss_step=1.020, train_loss_scaled_step=851.0]Epoch 0:   0%|          | 22/13131 [00:36<6:05:32,  0.60it/s, v_num=mn9j, train_loss_step=1.040, train_loss_scaled_step=926.0]Epoch 0:   0%|          | 23/13131 [00:38<6:02:26,  0.60it/s, v_num=mn9j, train_loss_step=1.040, train_loss_scaled_step=926.0]Epoch 0:   0%|          | 23/13131 [00:38<6:04:06,  0.60it/s, v_num=mn9j, train_loss_step=1.030, train_loss_scaled_step=892.0]Epoch 0:   0%|          | 24/13131 [00:39<6:00:51,  0.61it/s, v_num=mn9j, train_loss_step=1.030, train_loss_scaled_step=892.0]Epoch 0:   0%|          | 24/13131 [00:39<6:02:28,  0.60it/s, v_num=mn9j, train_loss_step=1.040, train_loss_scaled_step=851.0]Epoch 0:   0%|          | 25/13131 [00:41<6:00:55,  0.61it/s, v_num=mn9j, train_loss_step=1.040, train_loss_scaled_step=851.0]Epoch 0:   0%|          | 25/13131 [00:41<6:02:26,  0.60it/s, v_num=mn9j, train_loss_step=1.010, train_loss_scaled_step=799.0]Epoch 0:   0%|          | 26/13131 [00:42<5:59:50,  0.61it/s, v_num=mn9j, train_loss_step=1.010, train_loss_scaled_step=799.0]Epoch 0:   0%|          | 26/13131 [00:43<6:01:19,  0.60it/s, v_num=mn9j, train_loss_step=1.060, train_loss_scaled_step=968.0]Epoch 0:   0%|          | 27/13131 [00:44<5:59:07,  0.61it/s, v_num=mn9j, train_loss_step=1.060, train_loss_scaled_step=968.0]Epoch 0:   0%|          | 27/13131 [00:44<6:00:33,  0.61it/s, v_num=mn9j, train_loss_step=0.991, train_loss_scaled_step=800.0]Epoch 0:   0%|          | 28/13131 [00:45<5:57:56,  0.61it/s, v_num=mn9j, train_loss_step=0.991, train_loss_scaled_step=800.0]Epoch 0:   0%|          | 28/13131 [00:46<5:59:19,  0.61it/s, v_num=mn9j, train_loss_step=1.030, train_loss_scaled_step=893.0]Epoch 0:   0%|          | 29/13131 [00:47<6:00:00,  0.61it/s, v_num=mn9j, train_loss_step=1.030, train_loss_scaled_step=893.0]Epoch 0:   0%|          | 29/13131 [00:47<6:01:19,  0.60it/s, v_num=mn9j, train_loss_step=1.000, train_loss_scaled_step=788.0]Epoch 0:   0%|          | 30/13131 [00:49<6:00:20,  0.61it/s, v_num=mn9j, train_loss_step=1.000, train_loss_scaled_step=788.0]Epoch 0:   0%|          | 30/13131 [00:49<6:01:37,  0.60it/s, v_num=mn9j, train_loss_step=1.040, train_loss_scaled_step=941.0]Epoch 0:   0%|          | 31/13131 [00:51<5:59:44,  0.61it/s, v_num=mn9j, train_loss_step=1.040, train_loss_scaled_step=941.0]Epoch 0:   0%|          | 31/13131 [00:51<6:00:58,  0.60it/s, v_num=mn9j, train_loss_step=0.972, train_loss_scaled_step=763.0]Epoch 0:   0%|          | 32/13131 [00:52<5:58:55,  0.61it/s, v_num=mn9j, train_loss_step=0.972, train_loss_scaled_step=763.0]Epoch 0:   0%|          | 32/13131 [00:52<6:00:07,  0.61it/s, v_num=mn9j, train_loss_step=0.967, train_loss_scaled_step=746.0]Epoch 0:   0%|          | 33/13131 [00:54<5:57:48,  0.61it/s, v_num=mn9j, train_loss_step=0.967, train_loss_scaled_step=746.0]Epoch 0:   0%|          | 33/13131 [00:54<5:58:57,  0.61it/s, v_num=mn9j, train_loss_step=0.958, train_loss_scaled_step=796.0]Epoch 0:   0%|          | 34/13131 [00:55<5:58:22,  0.61it/s, v_num=mn9j, train_loss_step=0.958, train_loss_scaled_step=796.0]Epoch 0:   0%|          | 34/13131 [00:55<5:59:30,  0.61it/s, v_num=mn9j, train_loss_step=0.934, train_loss_scaled_step=718.0]Epoch 0:   0%|          | 35/13131 [00:57<5:57:34,  0.61it/s, v_num=mn9j, train_loss_step=0.934, train_loss_scaled_step=718.0]Epoch 0:   0%|          | 35/13131 [00:57<5:58:40,  0.61it/s, v_num=mn9j, train_loss_step=0.984, train_loss_scaled_step=716.0]Epoch 0:   0%|          | 36/13131 [00:58<5:57:03,  0.61it/s, v_num=mn9j, train_loss_step=0.984, train_loss_scaled_step=716.0]Epoch 0:   0%|          | 36/13131 [00:59<5:58:06,  0.61it/s, v_num=mn9j, train_loss_step=1.000, train_loss_scaled_step=915.0]Epoch 0:   0%|          | 37/13131 [01:00<5:56:57,  0.61it/s, v_num=mn9j, train_loss_step=1.000, train_loss_scaled_step=915.0]Epoch 0:   0%|          | 37/13131 [01:00<5:58:00,  0.61it/s, v_num=mn9j, train_loss_step=0.988, train_loss_scaled_step=858.0]Epoch 0:   0%|          | 38/13131 [01:02<5:56:12,  0.61it/s, v_num=mn9j, train_loss_step=0.988, train_loss_scaled_step=858.0]Epoch 0:   0%|          | 38/13131 [01:02<5:57:14,  0.61it/s, v_num=mn9j, train_loss_step=0.940, train_loss_scaled_step=745.0]Epoch 0:   0%|          | 39/13131 [01:03<5:55:41,  0.61it/s, v_num=mn9j, train_loss_step=0.940, train_loss_scaled_step=745.0]Epoch 0:   0%|          | 39/13131 [01:03<5:56:41,  0.61it/s, v_num=mn9j, train_loss_step=0.983, train_loss_scaled_step=792.0]Epoch 0:   0%|          | 40/13131 [01:05<5:55:03,  0.61it/s, v_num=mn9j, train_loss_step=0.983, train_loss_scaled_step=792.0]Epoch 0:   0%|          | 40/13131 [01:05<5:56:01,  0.61it/s, v_num=mn9j, train_loss_step=0.935, train_loss_scaled_step=764.0]Epoch 0:   0%|          | 41/13131 [01:06<5:54:33,  0.62it/s, v_num=mn9j, train_loss_step=0.935, train_loss_scaled_step=764.0]Epoch 0:   0%|          | 41/13131 [01:06<5:55:29,  0.61it/s, v_num=mn9j, train_loss_step=0.956, train_loss_scaled_step=782.0]Epoch 0:   0%|          | 42/13131 [01:08<5:54:19,  0.62it/s, v_num=mn9j, train_loss_step=0.956, train_loss_scaled_step=782.0]Epoch 0:   0%|          | 42/13131 [01:08<5:55:15,  0.61it/s, v_num=mn9j, train_loss_step=0.973, train_loss_scaled_step=720.0]Epoch 0:   0%|          | 43/13131 [01:09<5:53:49,  0.62it/s, v_num=mn9j, train_loss_step=0.973, train_loss_scaled_step=720.0]

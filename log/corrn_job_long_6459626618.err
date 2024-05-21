@@ -1,0 +1,46 @@
+/var/spool/slurm/slurmd/state/job59626618/slurm_script: line 14: wandb_dir: command not found
+/var/spool/slurm/slurmd/state/job59626618/slurm_script: line 15: wandb_cache_dir: command not found
+/var/spool/slurm/slurmd/state/job59626618/slurm_script: line 16: wandb_config_dir: command not found
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: WARNING Path wandb/ wasn't writable, using system temp directory
+wandb: WARNING Path wandb/ wasn't writable, using system temp directory
+wandb: Currently logged in as: magmuell (forl-traffic). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in ./wandb/run-20240521_162506-ntqamfsd
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run driven-plasma-257
+wandb: ⭐️ View project at https://wandb.ai/forl-traffic/PMLR
+wandb: 🚀 View run at https://wandb.ai/forl-traffic/PMLR/runs/ntqamfsd
+wandb: logging graph, to disable use `wandb.watch(log_graph=False)`
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+
+  | Name  | Type     | Params
+-----------------------------------
+0 | model | deep_GNN | 15.1 K
+-----------------------------------
+15.1 K    Trainable params
+0         Non-trainable params
+15.1 K    Total params
+0.060     Total estimated model params size (MB)
+SLURM auto-requeueing enabled. Setting signal handlers.
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/connectors/logger_connector/result.py:441: It is recommended to use `self.log('val_loss_scaled', ..., sync_dist=True)` when logging on epoch level in distributed setting to accumulate the metric across devices.
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/connectors/logger_connector/result.py:441: It is recommended to use `self.log('val_loss', ..., sync_dist=True)` when logging on epoch level in distributed setting to accumulate the metric across devices.
+slurmstepd: error: *** JOB 59626618 ON eu-lo-g3-002 CANCELLED AT 2024-05-21T16:27:08 ***

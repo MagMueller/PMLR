@@ -1,0 +1,346 @@
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: Currently logged in as: magmuell (forl-traffic). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in ./wandb/run-20240516_055329-9ms8fuyo
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run solar-firebrand-199
+wandb: ⭐️ View project at https://wandb.ai/forl-traffic/PMLR
+wandb: 🚀 View run at https://wandb.ai/forl-traffic/PMLR/runs/9ms8fuyo
+wandb: logging graph, to disable use `wandb.watch(log_graph=False)`
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:653: Checkpoint directory /cluster/home/mmagnus/PMLR/checkpoints exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]
+
+  | Name  | Type     | Params
+-----------------------------------
+0 | model | deep_GNN | 2.1 M 
+-----------------------------------
+2.1 M     Trainable params
+0         Non-trainable params
+2.1 M     Total params
+8.489     Total estimated model params size (MB)
+SLURM auto-requeueing enabled. Setting signal handlers.
+
+-------------------------------------------------------------------------------
+main.py 105 <module>
+main(args)
+
+main.py 91 main
+trainer.fit(model)
+
+trainer.py 544 fit
+call._call_and_handle_interrupt(
+
+call.py 43 _call_and_handle_interrupt
+return trainer.strategy.launcher.launch(trainer_fn, *args, trainer=trainer, **kwargs)
+
+subprocess_script.py 105 launch
+return function(*args, **kwargs)
+
+trainer.py 580 _fit_impl
+self._run(model, ckpt_path=ckpt_path)
+
+trainer.py 987 _run
+results = self._run_stage()
+
+trainer.py 1031 _run_stage
+self._run_sanity_check()
+
+trainer.py 1060 _run_sanity_check
+val_loop.run()
+
+utilities.py 182 _decorator
+return loop_run(self, *args, **kwargs)
+
+evaluation_loop.py 135 run
+self._evaluation_step(batch, batch_idx, dataloader_idx, dataloader_iter)
+
+evaluation_loop.py 396 _evaluation_step
+output = call._call_strategy_hook(trainer, hook_name, *step_args)
+
+call.py 309 _call_strategy_hook
+output = fn(*args, **kwargs)
+
+strategy.py 411 validation_step
+return self._forward_redirection(self.model, self.lightning_module, "validation_step", *args, **kwargs)
+
+strategy.py 642 __call__
+wrapper_output = wrapper_module(*args, **kwargs)
+
+module.py 1532 _wrapped_call_impl
+return self._call_impl(*args, **kwargs)
+
+module.py 1541 _call_impl
+return forward_call(*args, **kwargs)
+
+distributed.py 1593 forward
+else self._run_ddp_forward(*inputs, **kwargs)
+
+distributed.py 1411 _run_ddp_forward
+return self.module(*inputs, **kwargs)  # type: ignore[index]
+
+module.py 1532 _wrapped_call_impl
+return self._call_impl(*args, **kwargs)
+
+module.py 1582 _call_impl
+result = forward_call(*args, **kwargs)
+
+strategy.py 635 wrapped_forward
+out = method(*_args, **_kwargs)
+
+model.py 102 validation_step
+predictions = self(x, edge_index)
+
+module.py 1532 _wrapped_call_impl
+return self._call_impl(*args, **kwargs)
+
+module.py 1582 _call_impl
+result = forward_call(*args, **kwargs)
+
+model.py 78 forward
+return self.model(x, edge_index)
+
+module.py 1532 _wrapped_call_impl
+return self._call_impl(*args, **kwargs)
+
+module.py 1582 _call_impl
+result = forward_call(*args, **kwargs)
+
+model.py 53 forward
+x0, _ = self.graphcon(x0, x0, edge_index)
+
+module.py 1532 _wrapped_call_impl
+return self._call_impl(*args, **kwargs)
+
+module.py 1541 _call_impl
+return forward_call(*args, **kwargs)
+
+model.py 28 forward
+Y0 = Y0 + self.dt * (torch.relu(gnn(X0, edge_index)) -
+
+module.py 1532 _wrapped_call_impl
+return self._call_impl(*args, **kwargs)
+
+module.py 1541 _call_impl
+return forward_call(*args, **kwargs)
+
+gcn_conv.py 263 forward
+out = self.propagate(edge_index, x=x, edge_weight=edge_weight)
+
+torch_geometric.nn.conv.gcn_conv_GCNConv_propagate_t87qjwfq.py 168 propagate
+kwargs = self.collect(
+
+torch_geometric.nn.conv.gcn_conv_GCNConv_propagate_t87qjwfq.py 89 collect
+x_j = self._index_select(x, edge_index_j)
+
+message_passing.py 313 _index_select
+return self._index_select_safe(src, index)
+
+message_passing.py 336 _index_select_safe
+raise e
+
+message_passing.py 317 _index_select_safe
+return src.index_select(self.node_dim, index)
+
+torch.cuda.OutOfMemoryError:
+CUDA out of memory. Tried to allocate 17.80 GiB. GPU 
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/cluster/home/mmagnus/PMLR/main.py", line 105, in <module>
+[rank0]:     main(args)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/main.py", line 91, in main
+[rank0]:     trainer.fit(model)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 544, in fit
+[rank0]:     call._call_and_handle_interrupt(
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/call.py", line 43, in _call_and_handle_interrupt
+[rank0]:     return trainer.strategy.launcher.launch(trainer_fn, *args, trainer=trainer, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/launchers/subprocess_script.py", line 105, in launch
+[rank0]:     return function(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 580, in _fit_impl
+[rank0]:     self._run(model, ckpt_path=ckpt_path)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 987, in _run
+[rank0]:     results = self._run_stage()
+[rank0]:               ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 1031, in _run_stage
+[rank0]:     self._run_sanity_check()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 1060, in _run_sanity_check
+[rank0]:     val_loop.run()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/utilities.py", line 182, in _decorator
+[rank0]:     return loop_run(self, *args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 135, in run
+[rank0]:     self._evaluation_step(batch, batch_idx, dataloader_idx, dataloader_iter)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 396, in _evaluation_step
+[rank0]:     output = call._call_strategy_hook(trainer, hook_name, *step_args)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/call.py", line 309, in _call_strategy_hook
+[rank0]:     output = fn(*args, **kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/strategy.py", line 411, in validation_step
+[rank0]:     return self._forward_redirection(self.model, self.lightning_module, "validation_step", *args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/strategy.py", line 642, in __call__
+[rank0]:     wrapper_output = wrapper_module(*args, **kwargs)
+[rank0]:                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1593, in forward
+[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1411, in _run_ddp_forward
+[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1582, in _call_impl
+[rank0]:     result = forward_call(*args, **kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/strategy.py", line 635, in wrapped_forward
+[rank0]:     out = method(*_args, **_kwargs)
+[rank0]:           ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/model.py", line 102, in validation_step
+[rank0]:     predictions = self(x, edge_index)
+[rank0]:                   ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1582, in _call_impl
+[rank0]:     result = forward_call(*args, **kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/model.py", line 78, in forward
+[rank0]:     return self.model(x, edge_index)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1582, in _call_impl
+[rank0]:     result = forward_call(*args, **kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/model.py", line 53, in forward
+[rank0]:     x0, _ = self.graphcon(x0, x0, edge_index)
+[rank0]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/model.py", line 28, in forward
+[rank0]:     Y0 = Y0 + self.dt * (torch.relu(gnn(X0, edge_index)) -
+[rank0]:                                     ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/nn/conv/gcn_conv.py", line 263, in forward
+[rank0]:     out = self.propagate(edge_index, x=x, edge_weight=edge_weight)
+[rank0]:           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/scratch/tmp.58866360.mmagnus/torch_geometric.nn.conv.gcn_conv_GCNConv_propagate_t87qjwfq.py", line 168, in propagate
+[rank0]:     kwargs = self.collect(
+[rank0]:              ^^^^^^^^^^^^^
+[rank0]:   File "/scratch/tmp.58866360.mmagnus/torch_geometric.nn.conv.gcn_conv_GCNConv_propagate_t87qjwfq.py", line 89, in collect
+[rank0]:     x_j = self._index_select(x, edge_index_j)
+[rank0]:           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/nn/conv/message_passing.py", line 313, in _index_select
+[rank0]:     return self._index_select_safe(src, index)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/nn/conv/message_passing.py", line 336, in _index_select_safe
+[rank0]:     raise e
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/nn/conv/message_passing.py", line 317, in _index_select_safe
+[rank0]:     return src.index_select(self.node_dim, index)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 17.80 GiB. GPU 
+wandb: - 0.005 MB of 0.005 MB uploadedwandb: \ 0.005 MB of 0.005 MB uploadedwandb: | 0.005 MB of 0.020 MB uploadedwandb: / 0.020 MB of 0.020 MB uploadedwandb: 🚀 View run solar-firebrand-199 at: https://wandb.ai/forl-traffic/PMLR/runs/9ms8fuyo
+wandb: ⭐️ View project at: https://wandb.ai/forl-traffic/PMLR
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20240516_055329-9ms8fuyo/logs
+Exception in thread NetStatThr:
+Traceback (most recent call last):
+  File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/threading.py", line 1038, in _bootstrap_inner
+Exception in thread IntMsgThr:
+Traceback (most recent call last):
+  File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/threading.py", line 1038, in _bootstrap_inner
+        self.run()self.run()
+
+  File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/threading.py", line 975, in run
+  File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/wandb_run.py", line 300, in check_internal_messages
+    self._target(*self._args, **self._kwargs)
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/wandb_run.py", line 268, in check_network_status
+        self._loop_check_status(self._loop_check_status(
+
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/wandb_run.py", line 224, in _loop_check_status
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/wandb_run.py", line 224, in _loop_check_status
+        local_handle = request()local_handle = request()
+
+                                      ^^^^^^^^^^^^^^^^^^
+
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface.py", line 856, in deliver_internal_messages
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface.py", line 848, in deliver_network_status
+        return self._deliver_internal_messages(internal_message)return self._deliver_network_status(status)
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 510, in _deliver_network_status
+^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 516, in _deliver_internal_messages
+    return self._deliver_record(record)
+     return self._deliver_record(record) 
+                  ^ ^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 459, in _deliver_record
+^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 459, in _deliver_record
+    handle = mailbox._deliver_record(record, interface=self)
+      handle = mailbox._deliver_record(record, interface=self) 
+                    ^ ^ ^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 455, in _deliver_record
+^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 455, in _deliver_record
+    interface._publish(record)
+    interface._publish(record)  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface_sock.py", line 51, in _publish
+
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/interface/interface_sock.py", line 51, in _publish
+    self._sock_client.send_record_publish(record)
+    self._sock_client.send_record_publish(record)  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 221, in send_record_publish
+
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 221, in send_record_publish
+        self.send_server_request(server_req)self.send_server_request(server_req)
+
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 155, in send_server_request
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 155, in send_server_request
+        self._send_message(msg)self._send_message(msg)
+
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 152, in _send_message
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 152, in _send_message
+    self._sendall_with_error_handle(header + data)    
+self._sendall_with_error_handle(header + data)
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+    sent = self._sock.send(data)
+    sent = self._sock.send(data) 
+                   ^ ^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^BrokenPipeError
+: [Errno 32] Broken pipeBrokenPipeError
+: [Errno 32] Broken pipe

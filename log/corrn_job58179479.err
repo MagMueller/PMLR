@@ -1,0 +1,14 @@
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+wandb: Currently logged in as: magmuell (forl-traffic). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in /cluster/home/mmagnus/PMLR/wandb/run-20240509_102109-ho42kqy0
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run unique-sky-94
+wandb: ⭐️ View project at https://wandb.ai/forl-traffic/PMLR
+wandb: 🚀 View run at https://wandb.ai/forl-traffic/PMLR/runs/ho42kqy0
+slurmstepd: error: *** JOB 58179479 ON eu-lo-s4-080 CANCELLED AT 2024-05-09T20:19:42 DUE TO TIME LIMIT ***

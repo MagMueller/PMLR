@@ -1,0 +1,8 @@
+Number of CPUs: 72
+Memory CPU in GB: 374.3210563659668
+Number of GPUs: 2
+Memory device 0 in GB: 11.546394624
+Memory device 1 in GB: 11.546394624
+Number of devices: 2
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]Updating std to dtype
+Updating std to device

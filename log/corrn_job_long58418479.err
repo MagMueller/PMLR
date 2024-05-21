@@ -1,0 +1,270 @@
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: Currently logged in as: magmuell (forl-traffic). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in ./wandb/run-20240513_074115-marnrbta
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run exalted-energy-172
+wandb: ⭐️ View project at https://wandb.ai/forl-traffic/PMLR
+wandb: 🚀 View run at https://wandb.ai/forl-traffic/PMLR/runs/marnrbta
+wandb: logging graph, to disable use `wandb.watch(log_graph=False)`
+Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/1
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 1 processes
+----------------------------------------------------------------------------------------------------
+
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:653: Checkpoint directory /cluster/home/mmagnus/PMLR/checkpoints exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+
+  | Name  | Type     | Params
+-----------------------------------
+0 | model | deep_GNN | 15.1 K
+-----------------------------------
+15.1 K    Trainable params
+0         Non-trainable params
+15.1 K    Total params
+0.060     Total estimated model params size (MB)
+SLURM auto-requeueing enabled. Setting signal handlers.
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/utils/data/dataloader.py:558: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+
+-------------------------------------------------------------------------------
+call.py 43 _call_and_handle_interrupt
+return trainer.strategy.launcher.launch(trainer_fn, *args, trainer=trainer, **kwargs)
+
+subprocess_script.py 105 launch
+return function(*args, **kwargs)
+
+trainer.py 580 _fit_impl
+self._run(model, ckpt_path=ckpt_path)
+
+trainer.py 987 _run
+results = self._run_stage()
+
+trainer.py 1033 _run_stage
+self.fit_loop.run()
+
+fit_loop.py 205 run
+self.advance()
+
+fit_loop.py 363 advance
+self.epoch_loop.run(self._data_fetcher)
+
+training_epoch_loop.py 140 run
+self.advance(data_fetcher)
+
+training_epoch_loop.py 212 advance
+batch, _, __ = next(data_fetcher)
+
+fetchers.py 133 __next__
+batch = super().__next__()
+
+fetchers.py 60 __next__
+batch = next(self.iterator)
+
+combined_loader.py 341 __next__
+out = next(self._iterator)
+
+combined_loader.py 78 __next__
+out[i] = next(self.iterators[i])
+
+dataloader.py 631 __next__
+data = self._next_data()
+
+dataloader.py 1329 _next_data
+idx, data = self._get_data()
+
+dataloader.py 1295 _get_data
+success, data = self._try_get_data()
+
+dataloader.py 1133 _try_get_data
+data = self._data_queue.get(timeout=timeout)
+
+queues.py 122 get
+return _ForkingPickler.loads(res)
+
+reductions.py 495 rebuild_storage_fd
+fd = df.detach()
+
+resource_sharer.py 57 detach
+with _resource_sharer.get_connection(self._id) as conn:
+
+resource_sharer.py 86 get_connection
+c = Client(address, authkey=process.current_process().authkey)
+
+connection.py 501 Client
+c = SocketClient(address)
+
+connection.py 629 SocketClient
+s.connect(address)
+
+ConnectionRefusedError:
+111
+Connection refused
+
+-------------------------------------------------------------------------------
+main.py 81 <module>
+main(args)
+
+main.py 69 main
+trainer.fit(model)
+
+trainer.py 544 fit
+call._call_and_handle_interrupt(
+
+call.py 68 _call_and_handle_interrupt
+trainer._teardown()
+
+trainer.py 1010 _teardown
+self.strategy.teardown()
+
+ddp.py 419 teardown
+super().teardown()
+
+parallel.py 133 teardown
+super().teardown()
+
+strategy.py 537 teardown
+self.lightning_module.cpu()
+
+device_dtype_mixin.py 82 cpu
+return super().cpu()
+
+module.py 964 cpu
+return self._apply(lambda t: t.cpu())
+
+module.py 779 _apply
+module._apply(fn)
+
+module.py 779 _apply
+module._apply(fn)
+
+module.py 805 _apply
+p_should_use_set_data = compute_should_use_set_data(param, param_applied)
+
+module.py 782 compute_should_use_set_data
+if torch._has_compatible_shallow_copy_type(tensor, tensor_applied):
+
+signal_handling.py 66 handler
+_error_if_any_worker_fails()
+
+RuntimeError:
+DataLoader worker (pid 152717) is killed by signal: Killed. 
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/call.py", line 43, in _call_and_handle_interrupt
+[rank0]:     return trainer.strategy.launcher.launch(trainer_fn, *args, trainer=trainer, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/launchers/subprocess_script.py", line 105, in launch
+[rank0]:     return function(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 580, in _fit_impl
+[rank0]:     self._run(model, ckpt_path=ckpt_path)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 987, in _run
+[rank0]:     results = self._run_stage()
+[rank0]:               ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 1033, in _run_stage
+[rank0]:     self.fit_loop.run()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/fit_loop.py", line 205, in run
+[rank0]:     self.advance()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/fit_loop.py", line 363, in advance
+[rank0]:     self.epoch_loop.run(self._data_fetcher)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 140, in run
+[rank0]:     self.advance(data_fetcher)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 212, in advance
+[rank0]:     batch, _, __ = next(data_fetcher)
+[rank0]:                    ^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/fetchers.py", line 133, in __next__
+[rank0]:     batch = super().__next__()
+[rank0]:             ^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/loops/fetchers.py", line 60, in __next__
+[rank0]:     batch = next(self.iterator)
+[rank0]:             ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/utilities/combined_loader.py", line 341, in __next__
+[rank0]:     out = next(self._iterator)
+[rank0]:           ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/utilities/combined_loader.py", line 78, in __next__
+[rank0]:     out[i] = next(self.iterators[i])
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/utils/data/dataloader.py", line 631, in __next__
+[rank0]:     data = self._next_data()
+[rank0]:            ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/utils/data/dataloader.py", line 1329, in _next_data
+[rank0]:     idx, data = self._get_data()
+[rank0]:                 ^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/utils/data/dataloader.py", line 1295, in _get_data
+[rank0]:     success, data = self._try_get_data()
+[rank0]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/utils/data/dataloader.py", line 1133, in _try_get_data
+[rank0]:     data = self._data_queue.get(timeout=timeout)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/multiprocessing/queues.py", line 122, in get
+[rank0]:     return _ForkingPickler.loads(res)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/multiprocessing/reductions.py", line 495, in rebuild_storage_fd
+[rank0]:     fd = df.detach()
+[rank0]:          ^^^^^^^^^^^
+[rank0]:   File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/multiprocessing/resource_sharer.py", line 57, in detach
+[rank0]:     with _resource_sharer.get_connection(self._id) as conn:
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/multiprocessing/resource_sharer.py", line 86, in get_connection
+[rank0]:     c = Client(address, authkey=process.current_process().authkey)
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/multiprocessing/connection.py", line 501, in Client
+[rank0]:     c = SocketClient(address)
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/apps/nss/gcc-9.3.0/python/3.11.2/x86_64/lib64/python3.11/multiprocessing/connection.py", line 629, in SocketClient
+[rank0]:     s.connect(address)
+[rank0]: ConnectionRefusedError: [Errno 111] Connection refused
+
+[rank0]: During handling of the above exception, another exception occurred:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/cluster/home/mmagnus/PMLR/main.py", line 81, in <module>
+[rank0]:     main(args)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/main.py", line 69, in main
+[rank0]:     trainer.fit(model)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 544, in fit
+[rank0]:     call._call_and_handle_interrupt(
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/call.py", line 68, in _call_and_handle_interrupt
+[rank0]:     trainer._teardown()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/trainer/trainer.py", line 1010, in _teardown
+[rank0]:     self.strategy.teardown()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/ddp.py", line 419, in teardown
+[rank0]:     super().teardown()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/parallel.py", line 133, in teardown
+[rank0]:     super().teardown()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/pytorch_lightning/strategies/strategy.py", line 537, in teardown
+[rank0]:     self.lightning_module.cpu()
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/lightning_fabric/utilities/device_dtype_mixin.py", line 82, in cpu
+[rank0]:     return super().cpu()
+[rank0]:            ^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 964, in cpu
+[rank0]:     return self._apply(lambda t: t.cpu())
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 779, in _apply
+[rank0]:     module._apply(fn)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 779, in _apply
+[rank0]:     module._apply(fn)
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 805, in _apply
+[rank0]:     p_should_use_set_data = compute_should_use_set_data(param, param_applied)
+[rank0]:                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 782, in compute_should_use_set_data
+[rank0]:     if torch._has_compatible_shallow_copy_type(tensor, tensor_applied):
+[rank0]:        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+[rank0]:     _error_if_any_worker_fails()
+[rank0]: RuntimeError: DataLoader worker (pid 152717) is killed by signal: Killed. 
+wandb: - 0.010 MB of 0.010 MB uploadedwandb: \ 0.010 MB of 0.010 MB uploadedwandb: | 0.010 MB of 0.010 MB uploadedwandb: / 0.010 MB of 0.010 MB uploadedwandb: - 0.035 MB of 0.087 MB uploaded (0.001 MB deduped)wandb: \ 0.087 MB of 0.087 MB uploaded (0.001 MB deduped)wandb: 🚀 View run exalted-energy-172 at: https://wandb.ai/forl-traffic/PMLR/runs/marnrbta
+wandb: ⭐️ View project at: https://wandb.ai/forl-traffic/PMLR
+wandb: Synced 5 W&B file(s), 1 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20240513_074115-marnrbta/logs
+slurmstepd: error: Detected 15 oom_kill events in StepId=58418479.batch. Some of the step tasks have been OOM Killed.

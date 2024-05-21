@@ -1,0 +1,58 @@
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:54: UserWarning: An issue occurred while importing 'pyg-lib'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'pyg-lib'. "
+/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/typing.py:110: UserWarning: An issue occurred while importing 'torch-sparse'. Disabling its usage. Stacktrace: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by /cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/libpyg.so)
+  warnings.warn(f"An issue occurred while importing 'torch-sparse'. "
+wandb: Currently logged in as: magmuell (forl-traffic). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in /cluster/home/mmagnus/PMLR/wandb/run-20240509_090852-h347d0vb
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run zany-monkey-83
+wandb: ⭐️ View project at https://wandb.ai/forl-traffic/PMLR
+wandb: 🚀 View run at https://wandb.ai/forl-traffic/PMLR/runs/h347d0vb
+Traceback (most recent call last):
+  File "/cluster/home/mmagnus/PMLR/main.py", line 98, in <module>
+    rmse, acc = evaluate(model, validation_loader, DEVICE, subset=SUBSET_VAL)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/utils/eval.py", line 67, in evaluate
+    predictions = model(x_input, edge_index)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1582, in _call_impl
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/model.py", line 48, in forward
+    X, Y = self.graphcon(X0, Y0, edge_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/model.py", line 22, in forward
+    Y = Y + self.dt * (torch.relu(gnn(X, edge_index)) -
+                                  ^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/nn/conv/gcn_conv.py", line 263, in forward
+    out = self.propagate(edge_index, x=x, edge_weight=edge_weight)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/tmp.58176680.mmagnus/torch_geometric.nn.conv.gcn_conv_GCNConv_propagate_2x0ot6wj.py", line 194, in propagate
+    out = self.message(
+          ^^^^^^^^^^^^^
+  File "/cluster/home/mmagnus/PMLR/pmlr_env/lib64/python3.11/site-packages/torch_geometric/nn/conv/gcn_conv.py", line 271, in message
+    return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.23 GiB. GPU 
+wandb: - 0.005 MB of 0.005 MB uploadedwandb: \ 0.005 MB of 0.007 MB uploadedwandb: | 0.010 MB of 0.010 MB uploadedwandb: 🚀 View run zany-monkey-83 at: https://wandb.ai/forl-traffic/PMLR/runs/h347d0vb
+wandb: ⭐️ View project at: https://wandb.ai/forl-traffic/PMLR
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20240509_090852-h347d0vb/logs
