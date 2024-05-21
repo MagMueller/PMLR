@@ -98,6 +98,12 @@ python test_cuda.py
 It should print that cuda is available.
 If you run it on the normal login node (not in the interactive session) it will say `cuda available: False`, because you dont have access to the gpus.
 
+To run the main loop you can use:
+```bash
+python main.py model=deep_coRNN
+```
+And specify the model with hydra config model=deep_coRNN or model=coRNN or model=coRNN2.
+
 ### Submit job to cluster to train
 To submit a job to the cluster i provided a sample script:
 ```bash
