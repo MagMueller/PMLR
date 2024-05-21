@@ -172,3 +172,5 @@ lightning_logs/
 checkpoints/ 
 log/
 outputs
+multirun/
+
