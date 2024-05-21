@@ -31,23 +31,13 @@ class LitModel(pl.LightningModule):
         self.last_prediction = None
         self.count_autoreg_steps = 0
 
-    def forward(self, x, edge_index):
-        # reshape?
-        # edge_index are all the same
-        edge_index = edge_index[0]
-        return self.model(x, edge_index)
+    def forward(self, x, edge_index=None):
+        if edge_index is None:
+            return self.model(x)
+        else:
+            return self.model(x, edge_index)
 
-    def training_step(self, batch, batch_idx=0):
-        x, edge_index, target = batch
-        predictions = self(x, edge_index)
-        loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
-        loss_scaled = (loss * self.std.squeeze()).mean()
-        loss = (loss).mean()
-        self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        self.log(name='train_loss_scaled', value=loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        return loss
-
-    def check_format(self, batch):
+    def convert_std(self, batch):
         # update std if needed to the device and dytpe of the batch
         if self.std.dtype != batch[0].dtype:
             print("Updating std to dtype")
@@ -56,14 +46,56 @@ class LitModel(pl.LightningModule):
             print("Updating std to device")
             self.std = self.std.to(batch[0].device)
 
-    def validation_step(self, batch, batch_idx):
-        self.check_format(batch)
+    def training_step(self, batch, batch_idx=0):
+        # TODO make for sequence prediction and combine gnn and image data here
+        if len(batch.shape) == 5:
+            loss, loss_scaled = self.step_image(batch)
+        elif len(batch) == 3:
+            loss, loss_scaled = self.step_gnn(batch)
+        else:
+            raise ValueError(f"Invalid batch shape {batch.shape}")
+
+        self.log(name='train_loss', value=loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log(name='train_loss_scaled', value=loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss
+
+    def step_gnn(self, batch):
         x, edge_index, target = batch
         predictions = self(x, edge_index)
         loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
         loss_scaled = (loss * self.std.squeeze()).mean()
         loss = (loss).mean()
-        self.log('val_loss_scaled', loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss, loss_scaled
+
+    def step_image(self, batch):
+        # batch has shape (B, Seq_len, n_var, H, W)
+        # loop over sequence and predict always next, calculate loss over all
+
+        seq_len = batch.size(1)
+        total_loss = 0
+        total_loss_scaled = 0
+        for i in range(seq_len - 1):
+            x, target = batch[:, i, :, :, :], batch[:, i + 1, :, :, :]
+            predictions = self(x)
+            loss = self.criteria(predictions, target, self.n_var, self.height, self.width)
+            loss_scaled = (loss * self.std.squeeze()).mean()
+            loss = (loss).mean()
+            total_loss += loss
+            total_loss_scaled += loss_scaled
+
+        return total_loss, total_loss_scaled
+
+    def validation_step(self, batch, batch_idx):
+        self.convert_std(batch)
+
+        if len(batch.shape) == 5:
+            loss, loss_scaled = self.step_image(batch)
+        elif len(batch) == 3:
+            loss, loss_scaled = self.step_gnn(batch)
+        else:
+            raise ValueError(f"Invalid batch shape {batch.shape}")
+
+        self.log('val_loss_scaled', total_loss_scaled, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
@@ -73,7 +105,7 @@ class LitModel(pl.LightningModule):
         # assume batch size to be 1
         # save prediction with self.last_prediction and reuse it for the next timestep,
         # count
-        self.check_format(batch)
+        self.convert_std(batch)
         x, edge_index, target = batch
 
         if self.count_autoreg_steps != 0:

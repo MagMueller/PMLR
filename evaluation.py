@@ -11,7 +11,7 @@ import torch
 from torch import nn
 import torch
 import os
-from utils.dataset import H5GeometricDataset
+from utils.dataset import H5GraphDataset
 from utils.eval import evaluate
 from utils.train import train_one_epoch
 from utils.configs.config import *
@@ -30,7 +30,7 @@ else:
 
 
 # create validation dataset
-val_dataset = H5GeometricDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH_VAL, height=HEIGHT, width=WIDTH, features=N_VAR)
+val_dataset = H5GraphDataset(VAL_FILE, sequence_length=SEQUENCE_LENGTH_VAL, height=HEIGHT, width=WIDTH, features=N_VAR)
 validation_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 # %%

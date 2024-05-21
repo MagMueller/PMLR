@@ -39,7 +39,9 @@ class deep_GNN(nn.Module):
         self.graphcon = GraphCON(self.GNNs, dt, epsilon, gamma, dropout)
         self.dec = nn.Linear(nhid, nclass)
 
-    def forward(self, x0, edge_index):
+    def forward(self, input):
+        x0, edge_index = input
+        edge_index = edge_index[0]
         # compute initial values of ODEs (encode input)
         x0 = self.enc(x0)
         # stack GNNs using GraphCON

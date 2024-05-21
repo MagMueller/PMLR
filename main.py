@@ -11,7 +11,7 @@ import torch
 from torch import device, nn
 import torch
 import os
-from utils.dataset import H5GeometricDataset
+from utils.dataset import H5GraphDataset, H5ImageDataset
 
 import wandb
 from pytorch_lightning.loggers import WandbLogger
@@ -68,19 +68,27 @@ def main(cfg: DictConfig):
 
     # m = torch.as_tensor((time_means - means)/stds)[:, 0:cfg.height].unsqueeze(0)
     # std = torch.tensor(stds).unsqueeze(0)
-    datasets = {
-        "train": ConcatDataset([H5GeometricDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
-        "val": H5GeometricDataset(cfg.env.val_file, cfg=cfg)
-    }
 
     # wandb_logger.watch(model, log='all', log_freq=100)
 
     if cfg.model.name == "coRNN":
         model = coRNN(**cfg.model)
-    elif cfg.model.name == "deep_coRNN":
-        model = deep_GNN(**cfg.model)
+        datasets = {
+            "train": ConcatDataset([H5ImageDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+            "val": H5ImageDataset(cfg.env.val_file, cfg=cfg)
+        }
     elif cfg.model.name == "coRNN2":
         model = coRNN2(**cfg.model)
+        datasets = {
+            "train": ConcatDataset([H5ImageDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+            "val": H5ImageDataset(cfg.env.val_file, cfg=cfg)
+        }
+    elif cfg.model.name == "deep_coRNN":
+        model = deep_GNN(**cfg.model)
+        datasets = {
+            "train": ConcatDataset([H5GraphDataset(os.path.join(cfg.env.data_path, f"{year}.h5"), cfg=cfg) for year in cfg.env.years]),
+            "val": H5GraphDataset(cfg.env.val_file, cfg=cfg)
+        }
     else:
         raise ValueError("Model name not recognized")
 

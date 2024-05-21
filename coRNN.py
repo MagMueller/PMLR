@@ -60,7 +60,7 @@ class coRNNCell2(nn.Module):
 
 
 class coRNN2(nn.Module):
-    def __init__(self, n_inp, n_hid, n_out, dt, gamma, epsilon):
+    def __init__(self, n_inp, n_hid, n_out, dt, gamma, epsilon, **kwargs):
         super(coRNN2, self).__init__()
         self.n_hid = n_hid
         self.readin = nn.Conv2d(3*n_inp, 2*n_hid, 3, stride=1, padding=1, dilation=1,
