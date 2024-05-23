@@ -1,9 +1,12 @@
 name: deep_coRNN
 nfeat: ${n_var}
-n_hid: 64
+n_hid: ${n_hid:64}
 nclass: ${n_var}
-nlayers: 3
-dt: 1.0
+nlayers: ${nlayers:3}
+dt: ${dt:1.0}
 epsilon: 1.0
-gamma: 1.0
-dropout: 0.1
+gamma: ${gamma:1.0}
+dropout: ${dropout:1.0}
+
+
+

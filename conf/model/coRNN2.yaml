@@ -1,10 +1,10 @@
 name: coRNN2
 n_inp: ${n_var}
-n_hid: 64
+n_hid: ${n_hid:64}
 n_out: ${n_var}
-dt: 1.0
-epsilon: 1.0
-gamma: 1.0
-n_roll: 4
+dt: ${dt:1.0}
+epsilon: ${epsilon:1.0}
+gamma: ${gamma:1.0}
+n_roll: ${n_roll:4}
 seq_len: ${sequence_length}
-kernel_size: 3
+kernel_size: ${kernel_size:3}

@@ -1,8 +1,14 @@
-
+# run for example with python main.py -m model=coRNN2 sweep=sweep_coRNN2
 defaults:
   - _self_
   - env: local  # Default environment
-  - model: coRNN2  # Default model # coRNN2 deep_coRNN
+  - model: ${model:coRNN2}  # Default model # coRNN2 deep_coRNN
+  - sweep: null
+  # - lit_model: default
+
+ 
+# lr: ${lr:5e-4}
+# pos_enc: ${pos_enc:true}
 
 data_path_cluster: "/cluster/scratch/mmagnus/data"
 data_path_local: "${hydra:runtime.cwd}/"

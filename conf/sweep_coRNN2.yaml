@@ -1,0 +1,40 @@
+defaults:
+  - override /model@_global_: coRNN2
+
+hydra:
+  sweeper:
+    _target_: hydra_plugins.hydra_optuna_sweeper.optuna_sweeper.OptunaSweeper
+    direction: minimize
+    storage: null
+    study_name: coRNN2_hyperparameter_study
+    n_trials: 100
+    n_jobs: 1
+    search_space:
+      n_hid:
+        type: categorial
+        choices: [8, 16, 20, 64, 128]
+      dt:
+        type: float
+        bounds:
+          - 0.1
+          - 2.0
+      epsilon:
+        type: categorial
+        coices: [0.0, 0.1, 0.5, 1.0]
+      seq_len:
+        type: int
+        bounds:
+          - 10
+          - 100
+      kernel_size:
+        type: categorial
+        choices: [3, 5, 7]
+      n_roll:
+        type: int
+        bounds:
+          - 3
+          - 20
+  
+
+
+
