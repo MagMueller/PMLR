@@ -25,5 +25,6 @@ source pmlr_env/bin/activate
 
 
 # read from command line
+echo "Running model: $1"
 python main.py env=cluster model=$1 # deep_coRNN # coRNN coRNN2
 
